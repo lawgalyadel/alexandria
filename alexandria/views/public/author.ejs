@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+<%
+function formatDate(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+%>
+    <div class="container">
+        <div class="author-page-header">
+            <% if (author.headshot_url) { %>
+                <img src="<%= author.headshot_url %>" alt="<%= author.name %>" class="author-page-avatar">
+            <% } else { %>
+                <div class="author-page-avatar"></div>
+            <% } %>
+            <div class="author-page-info">
+                <h1><%= author.name %></h1>
+                <% if (author.bio) { %><p><%= author.bio %></p><% } %>
+                <div class="author-page-links">
+                    <% if (author.website_url) { %><a href="<%= author.website_url %>">Website</a><% } %>
+                    <% if (author.twitter_url) { %><a href="<%= author.twitter_url %>">Twitter</a><% } %>
+                    <% if (author.linkedin_url) { %><a href="<%= author.linkedin_url %>">LinkedIn</a><% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="latest-section">
+        <div class="container" style="max-width:720px;">
+            <div class="latest-header"><h2>Articles by <%= author.name %></h2></div>
+            <div class="article-feed">
+                <% for (const a of articles) { %>
+                    <a href="/article/<%= a.slug %>" class="article-item">
+                        <div class="article-item-text">
+                            <div class="article-item-subject"><%= a.subject_names %></div>
+                            <h3 class="article-item-title"><%= a.title %></h3>
+                            <div class="article-item-meta"><%= formatDate(a.publish_date) %></div>
+                        </div>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </section>
+<%- include('../partials/footer') %>

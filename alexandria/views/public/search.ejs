@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+<%
+function formatDate(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+%>
+    <div class="search-page">
+        <h1>Search</h1>
+        <form class="search-page-form" action="/search" method="GET">
+            <input type="text" name="q" value="<%= query %>" placeholder="Search articles, authors, topics..." autofocus>
+            <button type="submit">Search</button>
+        </form>
+
+        <% if (query) { %>
+            <p class="search-results-count"><%= results.length %> result<%= results.length !== 1 ? 's' : '' %> for "<%= query %>"</p>
+            <div class="article-feed">
+                <% for (const a of results) { %>
+                    <a href="/article/<%= a.slug %>" class="article-item">
+                        <div class="article-item-text">
+                            <div class="article-item-subject"><%= a.subject_names || '' %></div>
+                            <h3 class="article-item-title"><%= a.title %></h3>
+                            <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
+                            <div class="article-item-meta">
+                                <% if (a.authors && a.authors.length) { %>
+                                    <span class="author"><%= a.authors[0].name %></span> &middot;
+                                <% } %>
+                                <%= formatDate(a.publish_date) %>
+                            </div>
+                        </div>
+                    </a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,37 @@
+<%- include('../partials/admin-header') %>
+
+    <div class="admin-page-header">
+        <h1>Articles</h1>
+        <a href="/admin/articles/new" class="btn btn-primary">New Article</a>
+    </div>
+
+    <div style="margin-bottom:1rem;display:flex;gap:0.5rem;">
+        <a href="/admin/articles" class="btn btn-sm <%= status==='all'?'btn-primary':'btn-secondary' %>">All</a>
+        <a href="/admin/articles?status=published" class="btn btn-sm <%= status==='published'?'btn-primary':'btn-secondary' %>">Published</a>
+        <a href="/admin/articles?status=draft" class="btn btn-sm <%= status==='draft'?'btn-primary':'btn-secondary' %>">Drafts</a>
+        <a href="/admin/articles?status=retracted" class="btn btn-sm <%= status==='retracted'?'btn-primary':'btn-secondary' %>">Retracted</a>
+    </div>
+
+    <div class="admin-card" style="padding:0;">
+        <table>
+            <thead><tr><th>Title</th><th>Authors</th><th>Subjects</th><th>Status</th><th>Views</th><th>Date</th><th></th></tr></thead>
+            <tbody>
+                <% for (const a of articles) { %>
+                    <tr>
+                        <td><a href="/admin/articles/<%= a.id %>/edit"><%= a.title %></a></td>
+                        <td style="font-size:0.82rem;color:#7a7a7a;"><%= a.author_names || '—' %></td>
+                        <td style="font-size:0.82rem;color:#7a7a7a;"><%= a.subject_names || '—' %></td>
+                        <td><span class="status-badge status-<%= a.status %>"><%= a.status %></span></td>
+                        <td><%= a.view_count %></td>
+                        <td style="font-size:0.82rem;"><%= a.publish_date ? new Date(a.publish_date).toLocaleDateString() : '—' %></td>
+                        <td><a href="/article/<%= a.slug %>" target="_blank" style="font-size:0.78rem;">View</a></td>
+                    </tr>
+                <% } %>
+                <% if (!articles.length) { %>
+                    <tr><td colspan="7" style="text-align:center;color:#7a7a7a;padding:2rem;">No articles found.</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+<%- include('../partials/admin-footer') %>

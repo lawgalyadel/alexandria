@@ -1,0 +1,199 @@
+<%- include('../partials/admin-header') %>
+
+    <div class="admin-page-header">
+        <h1><%= article ? 'Edit Article' : 'New Article' %></h1>
+        <div style="display:flex;gap:0.5rem;">
+            <% if (article) { %>
+                <a href="/article/<%= article.slug %>" target="_blank" class="btn btn-secondary btn-sm">Preview</a>
+            <% } %>
+            <a href="/admin/articles" class="btn btn-secondary btn-sm">Back to list</a>
+        </div>
+    </div>
+
+    <form method="POST" action="/admin/articles/save" enctype="multipart/form-data">
+        <% if (article) { %><input type="hidden" name="id" value="<%= article.id %>"><% } %>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;align-items:start;">
+            <!-- Main content column -->
+            <div>
+                <div class="admin-card">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" name="title" value="<%= article ? article.title : '' %>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle</label>
+                        <input type="text" name="subtitle" value="<%= article ? article.subtitle || '' : '' %>">
+                    </div>
+                    <div class="form-group">
+                        <label>Slug</label>
+                        <input type="text" name="slug" value="<%= article ? article.slug : '' %>" placeholder="auto-generated from title">
+                        <p class="form-hint">Leave blank to auto-generate from title.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Body (Markdown)</label>
+                        <textarea name="body" style="min-height:400px;" required><%= article ? article.body : '' %></textarea>
+                        <p class="form-hint">Supports Markdown: ## headings, **bold**, *italic*, > blockquotes, [links](url), ![images](url)</p>
+                    </div>
+                </div>
+
+                <!-- SEO -->
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem;">SEO</h3>
+                    <div class="form-group">
+                        <label>SEO Title</label>
+                        <input type="text" name="seo_title" value="<%= article ? article.seo_title || '' : '' %>">
+                    </div>
+                    <div class="form-group">
+                        <label>SEO Description</label>
+                        <textarea name="seo_description" style="min-height:80px;"><%= article ? article.seo_description || '' : '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>SEO Keywords</label>
+                        <input type="text" name="seo_keywords" value="<%= article ? article.seo_keywords || '' : '' %>" placeholder="comma-separated">
+                    </div>
+                </div>
+
+                <% if (article) { %>
+                <!-- Post-publication management -->
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem;">Post-Publication</h3>
+                    <div class="form-group">
+                        <label>Retraction Notice</label>
+                        <textarea name="retraction_notice" style="min-height:80px;" placeholder="If retracted, explain why here..."><%= article.retraction_notice || '' %></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Correction Notice</label>
+                        <textarea name="correction_notice" style="min-height:80px;" placeholder="Append corrections here..."><%= article.correction_notice || '' %></textarea>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+
+            <!-- Sidebar column -->
+            <div>
+                <!-- Publish settings -->
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem;">Publish</h3>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="draft" <%= article && article.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                            <option value="published" <%= article && article.status === 'published' ? 'selected' : '' %>>Published</option>
+                            <option value="retracted" <%= article && article.status === 'retracted' ? 'selected' : '' %>>Retracted</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Content Type</label>
+                        <select name="content_type">
+                            <option value="long_form" <%= article && article.content_type === 'long_form' ? 'selected' : '' %>>Long-form</option>
+                            <option value="short_form" <%= article && article.content_type === 'short_form' ? 'selected' : '' %>>Short-form</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Publish Date</label>
+                        <input type="datetime-local" name="publish_date" value="<%= article && article.publish_date ? new Date(article.publish_date).toISOString().slice(0,16) : '' %>">
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_global_featured" value="1" <%= article && article.is_global_featured ? 'checked' : '' %>>
+                            Global Featured (homepage)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_subject_featured" value="1" <%= article && article.is_subject_featured ? 'checked' : '' %>>
+                            Subject Featured
+                        </label>
+                    </div>
+                    <div class="form-actions" style="border:none;padding:0;margin:0;">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <% if (article) { %>
+                            <button type="submit" formaction="/admin/articles/<%= article.id %>/delete" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Delete this article?')">Delete</button>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Subjects -->
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.75rem;">Subjects</h3>
+                    <div class="form-group" style="margin:0;">
+                        <select name="subjects" multiple style="min-height:100px;">
+                            <% for (const s of allSubjects) { %>
+                                <option value="<%= s.id %>" <%= article && article.subject_ids && article.subject_ids.includes(s.id) ? 'selected' : '' %>><%= s.name %></option>
+                            <% } %>
+                        </select>
+                        <p class="form-hint">Hold Ctrl/Cmd to select multiple.</p>
+                    </div>
+                </div>
+
+                <!-- Authors -->
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.75rem;">Authors</h3>
+                    <div class="form-group">
+                        <label>Author(s)</label>
+                        <select name="authors" multiple style="min-height:100px;">
+                            <% for (const a of allAuthors) { %>
+                                <option value="<%= a.id %>" <%= article && article.author_ids && article.author_ids.includes(a.id) ? 'selected' : '' %>><%= a.name %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>Primary Author</label>
+                        <select name="primary_author">
+                            <option value="">Select...</option>
+                            <% for (const a of allAuthors) { %>
+                                <option value="<%= a.id %>" <%= article && article.primary_author_id === a.id ? 'selected' : '' %>><%= a.name %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.75rem;">Tags</h3>
+                    <div class="form-group" style="margin:0;">
+                        <select name="tags" multiple style="min-height:100px;">
+                            <% for (const t of allTags) { %>
+                                <option value="<%= t.id %>" <%= article && article.tag_ids && article.tag_ids.includes(t.id) ? 'selected' : '' %>><%= t.name %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Cover Image -->
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.75rem;">Cover Image</h3>
+                    <% if (article && article.cover_image_url) { %>
+                        <img src="<%= article.cover_image_url %>" alt="" style="width:100%;border-radius:4px;margin-bottom:0.75rem;">
+                        <input type="hidden" name="existing_cover" value="<%= article.cover_image_url %>">
+                    <% } %>
+                    <div class="form-group">
+                        <input type="file" name="cover_image" accept="image/*">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label>Alt Text</label>
+                        <input type="text" name="cover_image_alt" value="<%= article ? article.cover_image_alt || '' : '' %>" placeholder="Describe the image for accessibility">
+                    </div>
+                </div>
+
+                <!-- Monthly Issue -->
+                <% if (allIssues && allIssues.length) { %>
+                <div class="admin-card">
+                    <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.75rem;">Monthly Issue</h3>
+                    <div class="form-group" style="margin:0;">
+                        <select name="issue_id">
+                            <option value="">None</option>
+                            <% for (const iss of allIssues) { %>
+                                <option value="<%= iss.id %>" <%= article && article.issue_id === iss.id ? 'selected' : '' %>><%= iss.issue_number %> — <%= iss.title || '' %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </form>
+
+<%- include('../partials/admin-footer') %>

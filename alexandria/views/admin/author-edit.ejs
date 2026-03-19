@@ -1,0 +1,47 @@
+<%- include('../partials/admin-header') %>
+    <div class="admin-page-header">
+        <h1><%= author ? 'Edit Author' : 'New Author' %></h1>
+        <a href="/admin/authors" class="btn btn-secondary btn-sm">Back to list</a>
+    </div>
+    <div class="admin-card">
+        <form method="POST" action="/admin/authors/save" enctype="multipart/form-data">
+            <% if (author) { %><input type="hidden" name="id" value="<%= author.id %>"><% } %>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" value="<%= author ? author.name : '' %>" required>
+                </div>
+                <div class="form-group">
+                    <label>Headshot</label>
+                    <% if (author && author.headshot_url) { %>
+                        <img src="<%= author.headshot_url %>" style="width:48px;height:48px;border-radius:50%;margin-bottom:0.5rem;object-fit:cover;">
+                        <input type="hidden" name="existing_headshot" value="<%= author.headshot_url %>">
+                    <% } %>
+                    <input type="file" name="headshot" accept="image/*">
+                </div>
+                <div class="form-group full">
+                    <label>Bio</label>
+                    <textarea name="bio" style="min-height:100px;font-family:'Source Sans 3',sans-serif;"><%= author ? author.bio || '' : '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Website URL</label>
+                    <input type="url" name="website_url" value="<%= author ? author.website_url || '' : '' %>">
+                </div>
+                <div class="form-group">
+                    <label>Twitter URL</label>
+                    <input type="url" name="twitter_url" value="<%= author ? author.twitter_url || '' : '' %>">
+                </div>
+                <div class="form-group">
+                    <label>LinkedIn URL</label>
+                    <input type="url" name="linkedin_url" value="<%= author ? author.linkedin_url || '' : '' %>">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <% if (author) { %>
+                    <button type="submit" formaction="/admin/authors/<%= author.id %>/delete" class="btn btn-danger btn-sm" onclick="return confirm('Delete this author?')">Delete</button>
+                <% } %>
+            </div>
+        </form>
+    </div>
+<%- include('../partials/admin-footer') %>

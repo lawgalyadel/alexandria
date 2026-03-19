@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'Admin — Alexandria' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="/admin" class="admin-logo">Alexandria</a>
+            <span class="admin-badge">CMS</span>
+            <nav class="admin-nav">
+                <a href="/admin" class="<%= currentPath === '/admin' ? 'active' : '' %>">Dashboard</a>
+                <a href="/admin/articles" class="<%= currentPath.startsWith('/admin/articles') ? 'active' : '' %>">Articles</a>
+                <a href="/admin/authors" class="<%= currentPath.startsWith('/admin/authors') ? 'active' : '' %>">Authors</a>
+                <% if (user && (user.role === 'admin' || user.role === 'managing_editor')) { %>
+                    <a href="/admin/subjects" class="<%= currentPath.startsWith('/admin/subjects') ? 'active' : '' %>">Subjects</a>
+                <% } %>
+                <a href="/admin/media" class="<%= currentPath.startsWith('/admin/media') ? 'active' : '' %>">Media</a>
+                <% if (user && user.role === 'admin') { %>
+                    <a href="/admin/users" class="<%= currentPath.startsWith('/admin/users') ? 'active' : '' %>">Users</a>
+                <% } %>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <span class="admin-user-name"><%= user ? user.display_name : '' %></span>
+                <span class="admin-user-role"><%= user ? user.role.replace(/_/g, ' ') : '' %></span>
+                <a href="/" class="admin-link">View site</a>
+                <a href="/admin/logout" class="admin-link">Sign out</a>
+            </div>
+        </aside>
+        <main class="admin-main">

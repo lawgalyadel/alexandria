@@ -1,0 +1,101 @@
+<%- include('../partials/header') %>
+<%
+function formatDate(d) {
+    if (!d) return '';
+    const date = new Date(d);
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+%>
+
+    <section class="hero">
+        <div class="hero-content reveal">
+            <h1><span>A Journal of Ideas</span>Alexandria</h1>
+            <p class="hero-description">Rigorous analysis and thoughtful discourse across history, politics, law, economics, and philosophy.</p>
+        </div>
+    </section>
+
+    <% if (featured) { %>
+    <section class="featured-section">
+        <div class="container">
+            <div class="featured-label">Featured</div>
+            <div class="featured-article reveal">
+                <div class="featured-image">
+                    <% if (featured.cover_image_url) { %>
+                        <img src="<%= featured.cover_image_url %>" alt="<%= featured.cover_image_alt || featured.title %>" style="width:100%;height:100%;object-fit:cover;">
+                    <% } %>
+                </div>
+                <div class="featured-content">
+                    <div class="featured-subject"><%= featured.subject_names %></div>
+                    <h2 class="featured-title"><a href="/article/<%= featured.slug %>"><%= featured.title %></a></h2>
+                    <p class="featured-excerpt"><%= featured.subtitle || featured.body.substring(0, 200) + '...' %></p>
+                    <div class="featured-meta">
+                        <% if (featured.authors && featured.authors.length) { %>
+                            <span class="author"><a href="/author/<%= featured.authors[0].slug %>"><%= featured.authors[0].name %></a></span> &middot;
+                        <% } %>
+                        <%= formatDate(featured.publish_date) %>
+                    </div>
+                    <a href="/article/<%= featured.slug %>" class="read-link">Continue reading
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
+    <section class="subjects-section">
+        <div class="container">
+            <div class="section-label">Explore by Discipline</div>
+            <div class="subjects-grid reveal">
+                <% for (const s of subjects) { %>
+                    <a class="subject-tile" href="/subject/<%= s.slug %>">
+                        <h3 class="subject-name"><%= s.name %></h3>
+                        <p class="subject-count"><%= subjectCounts[s.id] || 0 %> articles</p>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <section class="latest-section">
+        <div class="container">
+            <div class="latest-header">
+                <h2>Latest</h2>
+            </div>
+            <div class="article-feed">
+                <% for (const a of latest) { %>
+                    <a href="/article/<%= a.slug %>" class="article-item reveal">
+                        <div class="article-item-text">
+                            <div class="article-item-subject"><%= a.subject_names %></div>
+                            <h3 class="article-item-title"><%= a.title %></h3>
+                            <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
+                            <div class="article-item-meta">
+                                <% if (a.authors && a.authors.length) { %>
+                                    <span class="author"><%= a.authors[0].name %></span> &middot;
+                                <% } %>
+                                <%= formatDate(a.publish_date) %>
+                            </div>
+                        </div>
+                        <% if (a.cover_image_url) { %>
+                            <img src="<%= a.cover_image_url %>" alt="<%= a.cover_image_alt || '' %>" class="article-item-thumb">
+                        <% } else { %>
+                            <div class="article-item-thumb"></div>
+                        <% } %>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </section>
+
+    <section class="subscribe-banner">
+        <div class="subscribe-inner">
+            <h2>Stay informed</h2>
+            <p>Get new articles delivered directly to your inbox. Free, no spam, unsubscribe any time.</p>
+            <form class="subscribe-form" onsubmit="event.preventDefault();">
+                <input type="email" placeholder="Your email address">
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+<%- include('../partials/footer') %>

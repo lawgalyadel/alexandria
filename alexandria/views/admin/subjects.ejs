@@ -1,0 +1,37 @@
+<%- include('../partials/admin-header') %>
+    <div class="admin-page-header"><h1>Subjects</h1></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="admin-card" style="padding:0;">
+            <table>
+                <thead><tr><th>Name</th><th>Slug</th><th>Order</th></tr></thead>
+                <tbody>
+                    <% for (const s of subjectsList) { %>
+                        <tr>
+                            <td><strong><%= s.name %></strong></td>
+                            <td style="font-size:0.82rem;color:#7a7a7a;"><%= s.slug %></td>
+                            <td><%= s.sort_order %></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+        <div class="admin-card">
+            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem;">Add / Edit Subject</h3>
+            <form method="POST" action="/admin/subjects/save">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" style="min-height:80px;font-family:'Source Sans 3',sans-serif;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Sort Order</label>
+                    <input type="number" name="sort_order" value="0">
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+<%- include('../partials/admin-footer') %>

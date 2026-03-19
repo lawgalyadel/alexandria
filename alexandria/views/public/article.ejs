@@ -1,0 +1,103 @@
+<%- include('../partials/header') %>
+<%
+function formatDate(d) {
+    if (!d) return '';
+    const date = new Date(d);
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+%>
+
+    <article class="article-page">
+        <% if (article.status === 'retracted' && article.retraction_notice) { %>
+            <div class="retraction-banner">
+                <strong>Retraction Notice</strong>
+                <%= article.retraction_notice %>
+            </div>
+        <% } %>
+
+        <% if (article.correction_notice) { %>
+            <div class="retraction-banner" style="border-color: var(--accent); background: var(--accent-bg); color: var(--ink);">
+                <strong>Correction</strong>
+                <%= article.correction_notice %>
+            </div>
+        <% } %>
+
+        <header class="article-page-header">
+            <div class="article-page-subject">
+                <% article.subjects.forEach((s, i) => { %>
+                    <a href="/subject/<%= s.slug %>"><%= s.name %></a><%= i < article.subjects.length - 1 ? ' / ' : '' %>
+                <% }) %>
+            </div>
+            <h1 class="article-page-title"><%= article.title %></h1>
+            <% if (article.subtitle) { %>
+                <p class="article-page-subtitle"><%= article.subtitle %></p>
+            <% } %>
+            <div class="article-page-meta">
+                <% article.authors.forEach((a, i) => { %>
+                    <a href="/author/<%= a.slug %>"><%= a.name %></a><%= i < article.authors.length - 1 ? ', ' : '' %>
+                <% }) %>
+                <span>&middot;</span>
+                <span><%= formatDate(article.publish_date) %></span>
+            </div>
+        </header>
+
+        <% if (article.cover_image_url) { %>
+            <img src="<%= article.cover_image_url %>" alt="<%= article.cover_image_alt || article.title %>" class="article-cover">
+        <% } %>
+
+        <div class="article-body">
+            <%- article.bodyHtml %>
+        </div>
+
+        <% if (article.tags && article.tags.length) { %>
+            <div class="article-tags">
+                <% for (const tag of article.tags) { %>
+                    <a href="/search?q=<%= encodeURIComponent(tag.name) %>" class="tag-pill"><%= tag.name %></a>
+                <% } %>
+            </div>
+        <% } %>
+
+        <div class="share-buttons">
+            <a href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(article.title) %>&url=<%= encodeURIComponent('') %>" class="share-btn" target="_blank" rel="noopener">Twitter</a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= encodeURIComponent('') %>" class="share-btn" target="_blank" rel="noopener">LinkedIn</a>
+            <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(()=>this.textContent='Copied!')">Copy link</button>
+        </div>
+
+        <% for (const author of article.authors) { %>
+            <div class="author-card">
+                <% if (author.headshot_url) { %>
+                    <img src="<%= author.headshot_url %>" alt="<%= author.name %>" class="author-card-avatar">
+                <% } else { %>
+                    <div class="author-card-avatar"></div>
+                <% } %>
+                <div class="author-card-info">
+                    <h4><a href="/author/<%= author.slug %>"><%= author.name %></a></h4>
+                    <% if (author.bio) { %><p><%= author.bio %></p><% } %>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (related && related.length) { %>
+            <div class="related-section">
+                <h3>Related Articles</h3>
+                <div class="article-feed">
+                    <% for (const r of related) { %>
+                        <a href="/article/<%= r.slug %>" class="article-item">
+                            <div class="article-item-text">
+                                <div class="article-item-subject"><%= r.subject_names %></div>
+                                <h3 class="article-item-title"><%= r.title %></h3>
+                                <div class="article-item-meta">
+                                    <% if (r.authors && r.authors.length) { %>
+                                        <span class="author"><%= r.authors[0].name %></span> &middot;
+                                    <% } %>
+                                    <%= formatDate(r.publish_date) %>
+                                </div>
+                            </div>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+    </article>
+
+<%- include('../partials/footer') %>
