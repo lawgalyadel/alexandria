@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/submissions.css">
+</head>
+<body class="submissions-portal">
+
+  <%- include('../partials/header') %>
+
+  <main class="sub-main sub-main--form">
+    <div class="sub-form-wrap container">
+      <div class="sub-form-header">
+        <a href="/submit/dashboard" class="sub-back-link">← Dashboard</a>
+        <h1>New Submission</h1>
+        <p>Submitting as <strong><%= submitter.full_name %></strong>. Fields marked <span class="req">*</span> are required.</p>
+      </div>
+
+      <% if (error) { %>
+      <div class="sub-alert sub-alert--error"><%= error %></div>
+      <% } %>
+
+      <form class="sub-form" action="/submit/new" method="POST" enctype="multipart/form-data" novalidate>
+
+        <fieldset class="sub-fieldset">
+          <legend>Article Details</legend>
+
+          <div class="sub-form__field">
+            <label for="article_title">Article Title <span class="req">*</span></label>
+            <input type="text" id="article_title" name="article_title"
+                   value="<%= formData.article_title || '' %>"
+                   placeholder="The full title of your article"
+                   required maxlength="300">
+          </div>
+
+          <div class="sub-form__field">
+            <label for="summary">
+              Short Summary <span class="req">*</span>
+              <span class="sub-form__hint">A brief abstract of what your article discusses — 2 to 5 sentences.</span>
+            </label>
+            <textarea id="summary" name="summary"
+                      rows="4"
+                      placeholder="Summarise your article's argument, scope, and main findings…"
+                      required maxlength="1000"><%= formData.summary || '' %></textarea>
+            <span class="sub-form__char-count" data-target="summary" data-max="1000"></span>
+          </div>
+
+          <div class="sub-form__row sub-form__row--half">
+            <div class="sub-form__field">
+              <label for="subject_area">Subject Area <span class="req">*</span></label>
+              <select id="subject_area" name="subject_area" required>
+                <option value="" disabled <%= !formData.subject_area ? 'selected' : '' %>>Select a subject…</option>
+                <option value="History"       <%= (formData.subject_area || submitter.subject_area) === 'History'       ? 'selected' : '' %>>History</option>
+                <option value="Economics"     <%= (formData.subject_area || submitter.subject_area) === 'Economics'     ? 'selected' : '' %>>Economics</option>
+                <option value="Politics"      <%= (formData.subject_area || submitter.subject_area) === 'Politics'      ? 'selected' : '' %>>Politics</option>
+                <option value="Science"       <%= (formData.subject_area || submitter.subject_area) === 'Science'       ? 'selected' : '' %>>Science</option>
+                <option value="Culture"       <%= (formData.subject_area || submitter.subject_area) === 'Culture'       ? 'selected' : '' %>>Culture</option>
+                <option value="Philosophy"    <%= (formData.subject_area || submitter.subject_area) === 'Philosophy'    ? 'selected' : '' %>>Philosophy</option>
+                <option value="Law"           <%= (formData.subject_area || submitter.subject_area) === 'Law'           ? 'selected' : '' %>>Law</option>
+                <option value="International" <%= (formData.subject_area || submitter.subject_area) === 'International' ? 'selected' : '' %>>International Affairs</option>
+                <option value="Other"         <%= (formData.subject_area || submitter.subject_area) === 'Other'         ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+            <div class="sub-form__field">
+              <label for="article_type">Article Type <span class="req">*</span></label>
+              <select id="article_type" name="article_type" required>
+                <option value="" disabled <%= !formData.article_type ? 'selected' : '' %>>Select a type…</option>
+                <option value="academic"        <%= (formData.article_type || submitter.article_type) === 'academic'        ? 'selected' : '' %>>Academic Research</option>
+                <option value="current_affairs" <%= (formData.article_type || submitter.article_type) === 'current_affairs' ? 'selected' : '' %>>Current Affairs</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="sub-fieldset">
+          <legend>Article File</legend>
+          <div class="sub-form__field">
+            <label for="article_file">
+              Upload Article <span class="req">*</span>
+              <span class="sub-form__hint">PDF, DOC, or DOCX only. Maximum 20 MB. Please anonymise your document for blind review.</span>
+            </label>
+            <div class="sub-file-drop" id="file-drop">
+              <input type="file" id="article_file" name="article_file"
+                     accept=".pdf,.doc,.docx" required>
+              <div class="sub-file-drop__ui">
+                <span class="sub-file-drop__icon">⬆</span>
+                <span class="sub-file-drop__label">Drag and drop your file here, or <u>browse</u></span>
+                <span class="sub-file-drop__meta" id="file-meta">PDF, DOC, DOCX · Max 20 MB</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="sub-form__actions">
+          <button type="submit" class="btn btn--primary btn--large" id="submit-btn">Submit Article</button>
+          <a href="/submit/dashboard" class="btn btn--ghost">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="/js/submissions.js"></script>
+</body>
+</html>

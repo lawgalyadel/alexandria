@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/submissions.css">
+</head>
+<body class="submissions-portal">
+
+  <%- include('../partials/header') %>
+
+  <main class="sub-main">
+    <div class="sub-hero">
+      <div class="sub-hero__inner">
+        <span class="sub-hero__eyebrow">For Researchers & Writers</span>
+        <h1 class="sub-hero__title">Submit to Alexandria</h1>
+        <p class="sub-hero__lead">
+          Alexandria publishes long-form academic research and current affairs analysis. 
+          We welcome submissions from scholars, researchers, and independent writers on 
+          history, economics, politics, science, and culture.
+        </p>
+
+        <% if (!submitter) { %>
+        <div class="sub-hero__actions">
+          <a href="/submit/register" class="btn btn--primary">Create an Account</a>
+          <a href="/submit/login"    class="btn btn--ghost">Sign In</a>
+        </div>
+        <% } else { %>
+        <div class="sub-hero__actions">
+          <a href="/submit/dashboard" class="btn btn--primary">My Submissions</a>
+          <a href="/submit/new"       class="btn btn--ghost">Submit New Article</a>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="sub-info container">
+      <div class="sub-info__grid">
+
+        <div class="sub-info__block">
+          <div class="sub-info__icon">01</div>
+          <h3>Create an Account</h3>
+          <p>Register with your email and provide a brief biography. Your account persists so you can track the progress of all your submissions.</p>
+        </div>
+
+        <div class="sub-info__block">
+          <div class="sub-info__icon">02</div>
+          <h3>Submit Your Article</h3>
+          <p>Upload your article as a PDF, DOC, or DOCX file (up to 20 MB). Include a title and short abstract so our editors can review it efficiently.</p>
+        </div>
+
+        <div class="sub-info__block">
+          <div class="sub-info__icon">03</div>
+          <h3>Editorial Review</h3>
+          <p>Our editorial team reviews each submission. You can monitor your submission status — pending, under review, accepted, or declined — from your dashboard.</p>
+        </div>
+
+      </div>
+
+      <div class="sub-guidelines">
+        <h2>Submission Guidelines</h2>
+        <div class="sub-guidelines__grid">
+          <div>
+            <h4>Academic Articles</h4>
+            <ul>
+              <li>Original research or scholarly commentary</li>
+              <li>Footnotes and bibliography required</li>
+              <li>3,000–12,000 words recommended</li>
+              <li>Peer review disclosure if applicable</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Current Affairs</h4>
+            <ul>
+              <li>Analysis of contemporary events or policy</li>
+              <li>Evidence-based argument required</li>
+              <li>1,500–6,000 words recommended</li>
+              <li>Disclosures of interest required</li>
+            </ul>
+          </div>
+          <div>
+            <h4>File Requirements</h4>
+            <ul>
+              <li>PDF, DOC, or DOCX format only</li>
+              <li>Maximum 20 MB file size</li>
+              <li>Double-spaced, 12pt font preferred</li>
+              <li>Anonymised for blind review</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+</body>
+</html>

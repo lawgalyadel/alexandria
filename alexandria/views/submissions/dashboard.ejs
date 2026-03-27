@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/submissions.css">
+</head>
+<body class="submissions-portal">
+
+  <%- include('../partials/header') %>
+
+  <main class="sub-main container">
+
+    <% if (welcome) { %>
+    <div class="sub-alert sub-alert--success">
+      Welcome to Alexandria, <%= submitter.full_name %>. Your account is set up — you can now submit your first article.
+    </div>
+    <% } %>
+
+    <% if (submitted) { %>
+    <div class="sub-alert sub-alert--success">
+      Your submission has been received. Our editorial team will be in touch.
+    </div>
+    <% } %>
+
+    <div class="sub-dashboard">
+      <div class="sub-dashboard__header">
+        <div>
+          <h1>My Submissions</h1>
+          <p class="sub-dashboard__greeting">Signed in as <strong><%= submitter.full_name %></strong> · <a href="/submit/logout">Sign out</a></p>
+        </div>
+        <a href="/submit/new" class="btn btn--primary">+ New Submission</a>
+      </div>
+
+      <% if (submissions.length === 0) { %>
+      <div class="sub-empty">
+        <div class="sub-empty__icon">✦</div>
+        <h3>No submissions yet</h3>
+        <p>When you submit an article, it will appear here and you can track its progress through our review process.</p>
+        <a href="/submit/new" class="btn btn--primary">Submit Your First Article</a>
+      </div>
+      <% } else { %>
+
+      <div class="sub-table-wrap">
+        <table class="sub-table">
+          <thead>
+            <tr>
+              <th>Article</th>
+              <th>Subject</th>
+              <th>Type</th>
+              <th>Submitted</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% submissions.forEach(function(sub) { %>
+            <tr>
+              <td class="sub-table__title">
+                <strong><%= sub.article_title %></strong>
+                <span class="sub-table__summary"><%= sub.summary.substring(0, 100) %><%= sub.summary.length > 100 ? '…' : '' %></span>
+              </td>
+              <td><%= sub.subject_area %></td>
+              <td><%= sub.article_type === 'academic' ? 'Academic' : 'Current Affairs' %></td>
+              <td class="sub-table__date">
+                <%= new Date(sub.submitted_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+              </td>
+              <td>
+                <span class="sub-badge sub-badge--<%= sub.status %>">
+                  <% if (sub.status === 'pending')       { %>Pending<% } %>
+                  <% if (sub.status === 'under_review')  { %>Under Review<% } %>
+                  <% if (sub.status === 'accepted')      { %>Accepted<% } %>
+                  <% if (sub.status === 'rejected')      { %>Declined<% } %>
+                </span>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <% } %>
+    </div>
+
+    <div class="sub-account-info">
+      <h3>Your Account Details</h3>
+      <dl class="sub-account-dl">
+        <dt>Name</dt>        <dd><%= submitter.full_name %></dd>
+        <dt>Email</dt>       <dd><%= submitter.email %></dd>
+        <dt>Subject area</dt><dd><%= submitter.subject_area %></dd>
+        <dt>Default type</dt><dd><%= submitter.article_type === 'academic' ? 'Academic Research' : 'Current Affairs' %></dd>
+      </dl>
+    </div>
+
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

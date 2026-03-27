@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/submissions.css">
+</head>
+<body class="submissions-portal">
+
+  <%- include('../partials/header') %>
+
+  <main class="sub-main sub-main--form">
+    <div class="sub-form-wrap container">
+      <div class="sub-form-header">
+        <a href="/submit" class="sub-back-link">← Submissions</a>
+        <h1>Create an Account</h1>
+        <p>Register to submit articles to Alexandria. Your account lets you track the status of all your submissions.</p>
+      </div>
+
+      <% if (error) { %>
+      <div class="sub-alert sub-alert--error"><%= error %></div>
+      <% } %>
+
+      <form class="sub-form" action="/submit/register" method="POST" novalidate>
+
+        <fieldset class="sub-fieldset">
+          <legend>Your Details</legend>
+
+          <div class="sub-form__row sub-form__row--half">
+            <div class="sub-form__field">
+              <label for="full_name">Full Name <span class="req">*</span></label>
+              <input type="text" id="full_name" name="full_name"
+                     value="<%= formData.full_name || '' %>"
+                     placeholder="Dr. Jane Smith"
+                     required autocomplete="name">
+            </div>
+            <div class="sub-form__field">
+              <label for="email">Email Address <span class="req">*</span></label>
+              <input type="email" id="email" name="email"
+                     value="<%= formData.email || '' %>"
+                     placeholder="jane@university.edu"
+                     required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="sub-form__field">
+            <label for="bio_line">
+              One-Sentence Bio <span class="req">*</span>
+              <span class="sub-form__hint">This will appear alongside your submission. Keep it to one sentence.</span>
+            </label>
+            <input type="text" id="bio_line" name="bio_line"
+                   value="<%= formData.bio_line || '' %>"
+                   placeholder="Senior Lecturer in Economic History at the University of Edinburgh."
+                   maxlength="200" required>
+            <span class="sub-form__char-count" data-target="bio_line" data-max="200"></span>
+          </div>
+
+          <div class="sub-form__row sub-form__row--half">
+            <div class="sub-form__field">
+              <label for="subject_area">Primary Subject Area <span class="req">*</span></label>
+              <select id="subject_area" name="subject_area" required>
+                <option value="" disabled <%= !formData.subject_area ? 'selected' : '' %>>Select a subject…</option>
+                <option value="History"        <%= formData.subject_area === 'History'        ? 'selected' : '' %>>History</option>
+                <option value="Economics"      <%= formData.subject_area === 'Economics'      ? 'selected' : '' %>>Economics</option>
+                <option value="Politics"       <%= formData.subject_area === 'Politics'       ? 'selected' : '' %>>Politics</option>
+                <option value="Science"        <%= formData.subject_area === 'Science'        ? 'selected' : '' %>>Science</option>
+                <option value="Culture"        <%= formData.subject_area === 'Culture'        ? 'selected' : '' %>>Culture</option>
+                <option value="Philosophy"     <%= formData.subject_area === 'Philosophy'     ? 'selected' : '' %>>Philosophy</option>
+                <option value="Law"            <%= formData.subject_area === 'Law'            ? 'selected' : '' %>>Law</option>
+                <option value="International"  <%= formData.subject_area === 'International'  ? 'selected' : '' %>>International Affairs</option>
+                <option value="Other"          <%= formData.subject_area === 'Other'          ? 'selected' : '' %>>Other</option>
+              </select>
+            </div>
+            <div class="sub-form__field">
+              <label for="article_type">Article Type <span class="req">*</span></label>
+              <select id="article_type" name="article_type" required>
+                <option value="" disabled <%= !formData.article_type ? 'selected' : '' %>>Select a type…</option>
+                <option value="academic"        <%= formData.article_type === 'academic'        ? 'selected' : '' %>>Academic Research</option>
+                <option value="current_affairs" <%= formData.article_type === 'current_affairs' ? 'selected' : '' %>>Current Affairs</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="sub-fieldset">
+          <legend>Password</legend>
+          <div class="sub-form__row sub-form__row--half">
+            <div class="sub-form__field">
+              <label for="password">Password <span class="req">*</span></label>
+              <input type="password" id="password" name="password"
+                     placeholder="Minimum 8 characters"
+                     minlength="8" required autocomplete="new-password">
+            </div>
+            <div class="sub-form__field">
+              <label for="confirm_password">Confirm Password <span class="req">*</span></label>
+              <input type="password" id="confirm_password" name="confirm_password"
+                     placeholder="Repeat your password"
+                     minlength="8" required autocomplete="new-password">
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="sub-form__actions">
+          <button type="submit" class="btn btn--primary btn--large">Create Account</button>
+          <p class="sub-form__switch">Already have an account? <a href="/submit/login">Sign in</a></p>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="/js/submissions.js"></script>
+</body>
+</html>

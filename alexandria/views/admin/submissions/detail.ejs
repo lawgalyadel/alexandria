@@ -1,0 +1,97 @@
+<%- include('../../partials/admin-layout-top', { title: title, user: user }) %>
+
+<div class="admin-back-link-wrap">
+  <a href="/admin/submissions" class="admin-back-link">← All Submissions</a>
+</div>
+
+<% if (success) { %>
+<div class="admin-alert admin-alert--success">Submission status updated.</div>
+<% } %>
+
+<div class="sub-admin-detail">
+
+  <!-- Left: submission info -->
+  <div class="sub-admin-detail__main">
+
+    <div class="sub-admin-detail__header">
+      <span class="sub-badge sub-badge--<%= submission.status %> sub-badge--lg">
+        <% if (submission.status === 'pending')      { %>Pending<% } %>
+        <% if (submission.status === 'under_review') { %>Under Review<% } %>
+        <% if (submission.status === 'accepted')     { %>Accepted<% } %>
+        <% if (submission.status === 'rejected')     { %>Declined<% } %>
+      </span>
+      <h1><%= submission.article_title %></h1>
+      <p class="sub-admin-detail__meta">
+        Submitted <%= new Date(submission.submitted_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+        · <%= submission.subject_area %>
+        · <%= submission.article_type === 'academic' ? 'Academic Research' : 'Current Affairs' %>
+      </p>
+    </div>
+
+    <div class="sub-admin-detail__section">
+      <h3>Abstract</h3>
+      <p><%= submission.summary %></p>
+    </div>
+
+    <div class="sub-admin-detail__section">
+      <h3>Article File</h3>
+      <div class="sub-admin-file">
+        <div class="sub-admin-file__icon">📄</div>
+        <div class="sub-admin-file__info">
+          <strong><%= submission.file_name %></strong>
+          <span><%= (submission.file_size / 1024 / 1024).toFixed(2) %> MB</span>
+        </div>
+        <a href="/admin/submissions/<%= submission.id %>/download" class="btn btn--primary btn--small">Download</a>
+      </div>
+    </div>
+
+    <% if (submission.admin_notes) { %>
+    <div class="sub-admin-detail__section">
+      <h3>Previous Notes</h3>
+      <div class="sub-admin-notes"><%= submission.admin_notes %></div>
+    </div>
+    <% } %>
+
+  </div>
+
+  <!-- Right: contributor info + actions -->
+  <div class="sub-admin-detail__sidebar">
+
+    <div class="sub-admin-sidebar-card">
+      <h4>Contributor</h4>
+      <dl class="sub-admin-dl">
+        <dt>Name</dt>        <dd><strong><%= submission.full_name %></strong></dd>
+        <dt>Email</dt>       <dd><a href="mailto:<%= submission.email %>"><%= submission.email %></a></dd>
+        <dt>Bio</dt>         <dd><em><%= submission.bio_line %></em></dd>
+        <dt>Subject</dt>     <dd><%= submission.submitter_subject %></dd>
+      </dl>
+    </div>
+
+    <div class="sub-admin-sidebar-card">
+      <h4>Update Status</h4>
+      <form action="/admin/submissions/<%= submission.id %>/status" method="POST" class="sub-admin-status-form">
+
+        <div class="sub-form__field">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="pending"      <%= submission.status === 'pending'      ? 'selected' : '' %>>Pending</option>
+            <option value="under_review" <%= submission.status === 'under_review' ? 'selected' : '' %>>Under Review</option>
+            <option value="accepted"     <%= submission.status === 'accepted'     ? 'selected' : '' %>>Accepted</option>
+            <option value="rejected"     <%= submission.status === 'rejected'     ? 'selected' : '' %>>Declined</option>
+          </select>
+        </div>
+
+        <div class="sub-form__field">
+          <label for="admin_notes">Internal Notes</label>
+          <textarea id="admin_notes" name="admin_notes" rows="5"
+                    placeholder="Notes visible only to editors…"><%= submission.admin_notes || '' %></textarea>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">Save Decision</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<%- include('../../partials/admin-layout-bottom') %>

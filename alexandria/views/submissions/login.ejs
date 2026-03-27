@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/submissions.css">
+</head>
+<body class="submissions-portal">
+
+  <%- include('../partials/header') %>
+
+  <main class="sub-main sub-main--form">
+    <div class="sub-form-wrap sub-form-wrap--narrow container">
+      <div class="sub-form-header">
+        <a href="/submit" class="sub-back-link">← Submissions</a>
+        <h1>Sign In</h1>
+        <p>Access your submissions dashboard to track your articles.</p>
+      </div>
+
+      <% if (error) { %>
+      <div class="sub-alert sub-alert--error"><%= error %></div>
+      <% } %>
+
+      <form class="sub-form" action="/submit/login" method="POST">
+
+        <div class="sub-form__field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email"
+                 value="<%= email || '' %>"
+                 placeholder="jane@university.edu"
+                 required autocomplete="email" autofocus>
+        </div>
+
+        <div class="sub-form__field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password"
+                 placeholder="Your password"
+                 required autocomplete="current-password">
+        </div>
+
+        <div class="sub-form__actions">
+          <button type="submit" class="btn btn--primary btn--large btn--full">Sign In</button>
+          <p class="sub-form__switch">Don't have an account? <a href="/submit/register">Create one</a></p>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

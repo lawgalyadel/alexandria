@@ -7,6 +7,9 @@ const SQLiteStore = require('connect-sqlite3')(session);
 const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
+const submissionsRoute      = require('./routes/submissions');
+const adminSubmissionsRoute = require('./routes/admin_submissions');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -65,6 +68,9 @@ const apiRoutes = require('./routes/api');
 app.use('/', publicRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
+app.use('/submit',             submissionsRoute);
+app.use('/admin/submissions',  adminSubmissionsRoute);
+
 
 // ─── 404 ───
 app.use((req, res) => {
