@@ -1,0 +1,16 @@
+
+<div class="comment-item" id="comment-<%= comment.id %>">
+  <div class="comment-item__meta">
+    <span class="comment-item__name"><%= comment.display_name %></span>
+    <span class="comment-item__date">
+      <%= new Date(comment.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+    </span>
+  </div>
+  <div class="comment-item__body"><%= comment.body %></div>
+  <div class="comment-item__actions">
+    <button class="comment-vote-btn" data-comment-id="<%= comment.id %>" aria-label="Upvote">
+      <span class="comment-vote-btn__icon">↑</span>
+      <span class="comment-vote-btn__count"><%= comment.upvotes %></span>
+    </button>
+  </div>
+</div>

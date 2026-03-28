@@ -1747,7 +1747,106 @@
 @media (max-width: 480px) {
     .article-page-title { font-size: 1.5rem; }
     .article-page { padding: 1.5rem 1.25rem 2rem; }
-    .search-page { padding: 2rem 1.25rem; }
+    .search-page { padding: 4rem 2rem; }
     .static-page { padding: 1.5rem 1.25rem; }
     .share-buttons { flex-wrap: wrap; }
+}
+/* ═══════════════════════════════════════
+   SUBJECTS SLIDESHOW
+   Add to bottom of style.css
+═══════════════════════════════════════ */
+
+.subjects-slideshow-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.subjects-slideshow {
+    flex: 1;
+    overflow: hidden;
+}
+
+.subjects-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+}
+
+.subject-slide {
+    flex: 0 0 100%;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem 1.25rem;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.subject-slide:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+}
+
+.subject-slide:hover .subject-name {
+    color: var(--accent-dark);
+}
+
+
+.subjects-slide-btn {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.subjects-slide-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.subjects-slide-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.subjects-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+}
+
+.subjects-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    border: none;
+    background: var(--border);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.subjects-dot.active {
+    background: var(--accent);
+    transform: scale(1.3);
 }

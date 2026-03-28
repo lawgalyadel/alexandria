@@ -1,0 +1,61 @@
+
+<section class="comments-section" id="comments">
+  <div class="comments-header">
+    <h2 class="comments-title">
+      Discussion
+      <% if (commentCount > 0) { %>
+      <span class="comments-count"><%= commentCount %></span>
+      <% } %>
+    </h2>
+    <% if (trusted) { %>
+    <span class="comments-trust-badge" title="Your comments are published instantly">✦ Trusted Contributor</span>
+    <% } else if (approvedCount > 0) { %>
+    <span class="comments-trust-hint"><%= approvedCount %>/3 approved — <%= 3 - approvedCount %> more until trusted</span>
+    <% } %>
+  </div>
+
+  <!-- Comment form -->
+  <div class="comment-form-wrap" id="comment-form-wrap">
+    <form class="comment-form" id="comment-form" data-article-id="<%= article.id %>">
+      <div class="comment-form__fields">
+        <input
+          type="text"
+          id="comment-name"
+          name="display_name"
+          placeholder="Your name"
+          value="<%= defaultName %>"
+          maxlength="80"
+          required
+          autocomplete="name"
+        >
+        <textarea
+          id="comment-body"
+          name="body"
+          placeholder="Join the discussion…"
+          rows="4"
+          maxlength="2000"
+          required
+        ></textarea>
+      </div>
+      <div class="comment-form__footer">
+        <span class="comment-form__policy">Comments are moderated. Keep discussion respectful and on-topic.</span>
+        <button type="submit" class="comment-submit-btn" id="comment-submit">Post Comment</button>
+      </div>
+      <div class="comment-form__feedback" id="comment-feedback" hidden></div>
+    </form>
+  </div>
+
+  <!-- Comments list -->
+  <div class="comments-list" id="comments-list">
+    <% if (comments.length === 0) { %>
+    <div class="comments-empty" id="comments-empty">
+      Be the first to comment on this article.
+    </div>
+    <% } else { %>
+    <% comments.forEach(function(comment) { %>
+    <%- include('comment-item', { comment: comment }) %>
+    <% }) %>
+    <% } %>
+  </div>
+
+</section>

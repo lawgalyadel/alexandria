@@ -9,6 +9,8 @@ const path = require('path');
 const fs = require('fs');
 const submissionsRoute      = require('./routes/submissions');
 const adminSubmissionsRoute = require('./routes/admin_submissions');
+const commentsRoute = require('./routes/comments');
+const adminCommentsRoute = require('./routes/admin_comments');
 
 
 const app = express();
@@ -21,6 +23,11 @@ if (!fs.existsSync(DB_PATH)) {
     process.exit(1);
 }
 const db = new Database(DB_PATH);
+const schemas = ['schema.sql', 'submissions_schema.sql', 'comments_schema.sql'];
+for (const file of schemas) {
+  const p = path.join(__dirname, 'db', file);
+  if (fs.existsSync(p)) db.exec(fs.readFileSync(p, 'utf8'));
+}
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
@@ -70,7 +77,8 @@ app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
 app.use('/submit',             submissionsRoute);
 app.use('/admin/submissions',  adminSubmissionsRoute);
-
+app.use('/comments', commentsRoute);
+app.use('/admin/comments', adminCommentsRoute);
 
 // ─── 404 ───
 app.use((req, res) => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { marked } = require('marked');
+const crypto = require('crypto');
 
 // ═══════════════════════════════════════
 // HOMEPAGE
@@ -147,6 +148,18 @@ router.get('/subject/:slug', (req, res) => {
 // ═══════════════════════════════════════
 // ARTICLE PAGE
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// PATCH for public.js — replace your existing article route with this
+// It adds comment loading to the existing article page render
+// ═══════════════════════════════════════════════════════════════════
+
+
+
+function getSessionKey(req) {
+  const raw = req.session.id + (req.ip || '');
+  return crypto.createHash('sha256').update(raw).digest('hex').slice(0, 32);
+}
+
 router.get('/article/:slug', (req, res) => {
     const db = req.app.locals.db;
 
@@ -207,10 +220,38 @@ router.get('/article/:slug', (req, res) => {
         }
     }
 
+    // ── COMMENTS (new) ────────────────────────────────────────────
+    const comments = db.prepare(`
+        SELECT * FROM comments
+        WHERE article_id = ? AND status = 'approved' AND parent_id IS NULL
+        ORDER BY upvotes DESC, created_at ASC
+    `).all(article.id);
+
+    const commentCount = db.prepare(`
+        SELECT COUNT(*) as count FROM comments
+        WHERE article_id = ? AND status = 'approved'
+    `).get(article.id).count;
+
+    // Work out if this session is trusted
+    const sessionKey = getSessionKey(req);
+    const trustRow   = db.prepare('SELECT trusted, approved_count FROM comment_trust WHERE session_key = ?').get(sessionKey);
+    const trusted    = trustRow ? trustRow.trusted === 1 : false;
+    const approvedCount = trustRow ? trustRow.approved_count : 0;
+
+    // Pre-fill display name if logged in as submitter
+    const defaultName = req.session.submitter ? req.session.submitter.full_name : '';
+    // ─────────────────────────────────────────────────────────────
+
     res.render('public/article', {
         title: `${article.title} — Alexandria`,
         article,
-        related
+        related,
+        // Comments
+        comments,
+        commentCount,
+        trusted,
+        approvedCount,
+        defaultName
     });
 });
 

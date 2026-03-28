@@ -1,0 +1,254 @@
+/* public/css/comments.css
+   Comments section styles — add <link> to your article view or main layout
+   ------------------------------------------------------------------ */
+
+.comments-section {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 2rem 4rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.comments-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.comments-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.comments-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.15em 0.6em;
+  vertical-align: middle;
+}
+
+.comments-trust-badge {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2d6a4f;
+  background: #d8f3dc;
+  padding: 0.25em 0.75em;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+}
+
+.comments-trust-hint {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.78rem;
+  color: #999;
+}
+
+/* ── Comment form ────────────────────────────────────────────────────────────── */
+.comment-form-wrap {
+  margin-bottom: 2.5rem;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #e0ddd8;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.comment-form:focus-within {
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 3px rgba(26,26,26,0.06);
+}
+
+.comment-form__fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-form input[type="text"],
+.comment-form textarea {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  border: none;
+  outline: none;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  color: #1a1a1a;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+}
+
+.comment-form input[type="text"] {
+  border-bottom: 1px solid #e0ddd8;
+  font-weight: 600;
+}
+
+.comment-form textarea {
+  min-height: 90px;
+}
+
+.comment-form__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  background: #faf9f7;
+  border-top: 1px solid #e0ddd8;
+}
+
+.comment-form__policy {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.75rem;
+  color: #aaa;
+  flex: 1;
+}
+
+.comment-submit-btn {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.comment-submit-btn:hover    { background: #333; }
+.comment-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.comment-form__feedback {
+  padding: 0.75rem 1rem;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.875rem;
+  border-top: 1px solid #e0ddd8;
+}
+
+.comment-form__feedback.feedback--success { color: #2d6a4f; background: #d8f3dc; }
+.comment-form__feedback.feedback--error   { color: #991b1b; background: #fee2e2; }
+.comment-form__feedback.feedback--pending { color: #92400e; background: #fef3c7; }
+
+/* ── Comments list ──────────────────────────────────────────────────────────── */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.comments-empty {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  color: #aaa;
+  padding: 1.5rem 0;
+  font-style: italic;
+}
+
+/* ── Individual comment ─────────────────────────────────────────────────────── */
+.comment-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid #f0ede8;
+}
+.comment-item:last-child { border-bottom: none; }
+
+.comment-item--new {
+  animation: commentFadeIn 0.3s ease;
+}
+
+@keyframes commentFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.comment-item__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.comment-item__name {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.comment-item__date {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.78rem;
+  color: #aaa;
+}
+
+.comment-item__body {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.comment-item__actions {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.comment-vote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.78rem;
+  color: #aaa;
+  background: none;
+  border: 1px solid #e0ddd8;
+  border-radius: 999px;
+  padding: 0.2em 0.65em;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.comment-vote-btn:hover {
+  color: #1a1a1a;
+  border-color: #1a1a1a;
+}
+.comment-vote-btn.voted {
+  color: #1a1a1a;
+  border-color: #1a1a1a;
+  background: #f0ede8;
+}
+.comment-vote-btn__icon { font-size: 0.85em; }
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .comment-form__footer { flex-direction: column; align-items: flex-start; }
+  .comment-submit-btn   { align-self: flex-end; }
+  .comments-header      { flex-direction: column; gap: 0.5rem; }
+}

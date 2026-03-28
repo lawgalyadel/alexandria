@@ -1,0 +1,57 @@
+<%- include('../partials/admin-header') %>
+
+    <div class="admin-page-header">
+        <h1>Comment Moderation</h1>
+    </div>
+
+    <div class="sub-admin-tabs" style="display:flex;gap:0;border-bottom:1px solid var(--border,#e8e4de);margin-bottom:1.5rem;overflow-x:auto;">
+        <a href="/admin/comments?status=pending"  style="font-family:'Source Sans 3',sans-serif;font-size:0.875rem;padding:0.75rem 1.25rem;color:<%= filter==='pending'  ? '#1a1a1a' : '#888' %>;text-decoration:none;border-bottom:<%= filter==='pending'  ? '2px solid #1a1a1a' : '2px solid transparent' %>;white-space:nowrap;display:flex;align-items:center;gap:0.5rem;">
+            Pending <span style="background:#eee;color:#666;font-size:0.7rem;padding:0.1em 0.5em;border-radius:999px;font-weight:600;"><%= counts.pending || 0 %></span>
+        </a>
+        <a href="/admin/comments?status=approved" style="font-family:'Source Sans 3',sans-serif;font-size:0.875rem;padding:0.75rem 1.25rem;color:<%= filter==='approved' ? '#1a1a1a' : '#888' %>;text-decoration:none;border-bottom:<%= filter==='approved' ? '2px solid #1a1a1a' : '2px solid transparent' %>;white-space:nowrap;display:flex;align-items:center;gap:0.5rem;">
+            Approved <span style="background:#eee;color:#666;font-size:0.7rem;padding:0.1em 0.5em;border-radius:999px;font-weight:600;"><%= counts.approved || 0 %></span>
+        </a>
+        <a href="/admin/comments?status=rejected" style="font-family:'Source Sans 3',sans-serif;font-size:0.875rem;padding:0.75rem 1.25rem;color:<%= filter==='rejected' ? '#1a1a1a' : '#888' %>;text-decoration:none;border-bottom:<%= filter==='rejected' ? '2px solid #1a1a1a' : '2px solid transparent' %>;white-space:nowrap;display:flex;align-items:center;gap:0.5rem;">
+            Rejected <span style="background:#eee;color:#666;font-size:0.7rem;padding:0.1em 0.5em;border-radius:999px;font-weight:600;"><%= counts.rejected || 0 %></span>
+        </a>
+    </div>
+
+    <% if (success) { %>
+    <div class="alert alert-success" style="background:#d8f3dc;color:#2d6a4f;padding:0.75rem 1rem;border-radius:4px;margin-bottom:1rem;font-size:0.9rem;">Comment updated.</div>
+    <% } %>
+
+    <div class="admin-card">
+        <% if (comments.length === 0) { %>
+        <p style="color:#888;font-size:0.9rem;padding:1rem 0;">No <%= filter %> comments.</p>
+        <% } else { %>
+        <% comments.forEach(function(comment) { %>
+        <div style="padding:1.25rem 0;border-bottom:1px solid var(--border,#e8e4de);">
+            <div style="display:flex;gap:0.75rem;align-items:baseline;flex-wrap:wrap;font-size:0.85rem;margin-bottom:0.5rem;color:#888;">
+                <strong style="color:#1a1a1a;"><%= comment.display_name %></strong>
+                <span>on <a href="/article/<%= comment.article_slug %>" target="_blank" style="color:#c9922a;text-decoration:none;"><%= comment.article_title %></a></span>
+                <span style="margin-left:auto;">
+                    <%= new Date(comment.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                </span>
+            </div>
+            <div style="font-size:0.9rem;line-height:1.6;color:#333;background:#faf9f7;padding:0.75rem 1rem;border-radius:4px;margin-bottom:0.75rem;white-space:pre-wrap;"><%= comment.body %></div>
+            <div style="display:flex;gap:0.5rem;">
+                <% if (comment.status !== 'approved') { %>
+                <form action="/admin/comments/<%= comment.id %>/approve" method="POST" style="display:inline">
+                    <button type="submit" class="btn btn-primary" style="font-size:0.8rem;padding:0.35rem 0.9rem;background:#2d6a4f;border:none;">✓ Approve</button>
+                </form>
+                <% } %>
+                <% if (comment.status !== 'rejected') { %>
+                <form action="/admin/comments/<%= comment.id %>/reject" method="POST" style="display:inline">
+                    <button type="submit" class="btn" style="font-size:0.8rem;padding:0.35rem 0.9rem;background:#92400e;color:#fff;border:none;border-radius:4px;cursor:pointer;">✗ Reject</button>
+                </form>
+                <% } %>
+                <form action="/admin/comments/<%= comment.id %>/delete?from=<%= filter %>" method="POST" style="display:inline">
+                    <button type="submit" class="btn" style="font-size:0.8rem;padding:0.35rem 0.9rem;background:#991b1b;color:#fff;border:none;border-radius:4px;cursor:pointer;" onclick="return confirm('Delete this comment permanently?')">Delete</button>
+                </form>
+            </div>
+        </div>
+        <% }) %>
+        <% } %>
+    </div>
+
+<%- include('../partials/admin-footer') %>
