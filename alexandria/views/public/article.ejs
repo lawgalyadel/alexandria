@@ -100,4 +100,68 @@ function formatDate(d) {
         <% } %>
     </article>
 
+    <!-- COMMENTS SECTION -->
+    <section class="comments-section" id="comments">
+        <div class="comments-inner">
+            <h2 class="comments-heading">
+                Discussion
+                <% if (comments && comments.length) { %>
+                    <span class="comments-count"><%= comments.length %></span>
+                <% } %>
+            </h2>
+
+            <% if (comments && comments.length) { %>
+                <div class="comments-list">
+                    <% for (const c of comments) { %>
+                    <div class="comment-item">
+                        <div class="comment-avatar"><%= c.name.charAt(0).toUpperCase() %></div>
+                        <div class="comment-body">
+                            <div class="comment-meta">
+                                <span class="comment-author"><%= c.name %></span>
+                                <span class="comment-date"><%= new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                            </div>
+                            <p class="comment-text"><%= c.body %></p>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <p class="comments-empty">No comments yet. Be the first to respond.</p>
+            <% } %>
+
+            <!-- Pending notice -->
+            <div id="comment-pending" style="display:none;"></div>
+            <% if (typeof query !== 'undefined' && query && query.includes('pending')) { %>
+                <div class="comment-notice">Your comment has been submitted and is awaiting moderation.</div>
+            <% } %>
+
+            <!-- Submit form -->
+            <div class="comment-form-wrap">
+                <h3 class="comment-form-heading">Leave a response</h3>
+                <form class="comment-form" method="POST" action="/comments">
+                    <input type="hidden" name="article_id" value="<%= article.id %>">
+                    <div class="comment-form-row">
+                        <div class="comment-form-group">
+                            <label for="comment-name">Name <span style="color:var(--accent)">*</span></label>
+                            <input type="text" id="comment-name" name="name" required placeholder="Your name">
+                        </div>
+                        <div class="comment-form-group">
+                            <label for="comment-email">Email <span style="color:var(--accent)">*</span></label>
+                            <input type="email" id="comment-email" name="email" required placeholder="your@email.com">
+                            <span class="comment-form-hint">Never displayed publicly</span>
+                        </div>
+                    </div>
+                    <div class="comment-form-group">
+                        <label for="comment-body">Comment <span style="color:var(--accent)">*</span></label>
+                        <textarea id="comment-body" name="body" required placeholder="Share your thoughts on this article…" rows="5"></textarea>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                        <p class="comment-form-hint" style="margin:0;">Comments are moderated. First-time commenters require approval.</p>
+                        <button type="submit" class="form-submit">Post Comment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
 <%- include('../partials/footer') %>

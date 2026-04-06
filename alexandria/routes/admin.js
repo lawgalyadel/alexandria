@@ -410,6 +410,172 @@ router.post('/users/:id/delete', requireAuth, requireRole('admin'), (req, res) =
     res.redirect('/admin/users');
 });
 
+// ═══════════════════════════════════════════════════════════════
+// COMMENTS MODERATION
+// ═══════════════════════════════════════════════════════════════
+
+router.get('/comments', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const status = req.query.status || '';
+
+    let where = status ? `WHERE c.status = '${status}'` : '';
+
+    const comments = db.prepare(`
+        SELECT c.*, a.title as article_title, a.slug as article_slug,
+               cm.is_trusted, cm.is_flagged, cm.approved_count
+        FROM comments c
+        LEFT JOIN articles a ON c.article_id = a.id
+        LEFT JOIN commenters cm ON c.commenter_id = cm.id
+        ${where}
+        ORDER BY c.created_at DESC
+        LIMIT 100
+    `).all();
+
+    const counts = {
+        all:      db.prepare("SELECT COUNT(*) as n FROM comments").get().n,
+        pending:  db.prepare("SELECT COUNT(*) as n FROM comments WHERE status='pending'").get().n,
+        approved: db.prepare("SELECT COUNT(*) as n FROM comments WHERE status='approved'").get().n,
+        flagged:  db.prepare("SELECT COUNT(*) as n FROM comments WHERE status='flagged'").get().n,
+    };
+
+    res.render('admin/comments', {
+        title: 'Comments \u2013 Alexandria Admin',
+        comments, counts, status
+    });
+});
+
+// Helper: after approving a comment, check if commenter earns trust
+function checkAndGrantTrust(db, commenterId) {
+    if (!commenterId) return;
+    const commenter = db.prepare('SELECT * FROM commenters WHERE id = ?').get(commenterId);
+    if (!commenter || commenter.is_flagged) return;
+    const newCount = (commenter.approved_count || 0) + 1;
+    const becomesTrusted = newCount >= 5 ? 1 : commenter.is_trusted;
+    db.prepare(`
+        UPDATE commenters
+        SET approved_count = ?, is_trusted = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+    `).run(newCount, becomesTrusted, commenterId);
+}
+
+// Helper: after rejecting, decrement approved_count (un-approving)
+function decrementTrust(db, commenterId) {
+    if (!commenterId) return;
+    const commenter = db.prepare('SELECT * FROM commenters WHERE id = ?').get(commenterId);
+    if (!commenter) return;
+    const newCount = Math.max(0, (commenter.approved_count || 0) - 1);
+    const stillTrusted = newCount >= 5 ? commenter.is_trusted : 0;
+    db.prepare(`
+        UPDATE commenters
+        SET approved_count = ?, is_trusted = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+    `).run(newCount, stillTrusted, commenterId);
+}
+
+router.post('/comments/:id/approve', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (!comment) return res.redirect('/admin/comments');
+
+    // Only increment trust count if not already approved
+    if (comment.status !== 'approved') {
+        db.prepare("UPDATE comments SET status='approved' WHERE id=?").run(comment.id);
+        checkAndGrantTrust(db, comment.commenter_id);
+    }
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+router.post('/comments/:id/reject', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (!comment) return res.redirect('/admin/comments');
+
+    // If was approved, walk back the trust count
+    if (comment.status === 'approved') {
+        decrementTrust(db, comment.commenter_id);
+    }
+    db.prepare("UPDATE comments SET status='rejected' WHERE id=?").run(comment.id);
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+router.post('/comments/:id/flag', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (!comment) return res.redirect('/admin/comments');
+
+    if (comment.status === 'approved') {
+        decrementTrust(db, comment.commenter_id);
+    }
+    db.prepare("UPDATE comments SET status='flagged' WHERE id=?").run(comment.id);
+
+    // Flag the commenter too — revokes trust
+    if (comment.commenter_id) {
+        db.prepare(`
+            UPDATE commenters SET is_flagged=1, is_trusted=0, updated_at=CURRENT_TIMESTAMP
+            WHERE id=?
+        `).run(comment.commenter_id);
+    }
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+router.post('/comments/:id/delete', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (comment && comment.status === 'approved') {
+        decrementTrust(db, comment.commenter_id);
+    }
+    db.prepare('DELETE FROM comments WHERE id=?').run(req.params.id);
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+// ═══════════════════════════════════════════════════════════════
+// COMMENTERS TRUST MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+
+router.get('/commenters', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const commenters = db.prepare(`
+        SELECT * FROM commenters ORDER BY approved_count DESC, created_at DESC
+    `).all();
+    res.render('admin/commenters', {
+        title: 'Commenters \u2013 Alexandria Admin',
+        commenters
+    });
+});
+
+router.post('/commenters/:id/trust', requireAuth, (req, res) => {
+    req.app.locals.db.prepare(`
+        UPDATE commenters SET is_trusted=1, is_flagged=0, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(req.params.id);
+    res.redirect('/admin/commenters');
+});
+
+router.post('/commenters/:id/untrust', requireAuth, (req, res) => {
+    req.app.locals.db.prepare(`
+        UPDATE commenters SET is_trusted=0, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(req.params.id);
+    res.redirect('/admin/commenters');
+});
+
+router.post('/commenters/:id/flag', requireAuth, (req, res) => {
+    req.app.locals.db.prepare(`
+        UPDATE commenters SET is_flagged=1, is_trusted=0, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(req.params.id);
+    res.redirect('/admin/commenters');
+});
+
+router.post('/commenters/:id/unflag', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const commenter = db.prepare('SELECT * FROM commenters WHERE id=?').get(req.params.id);
+    if (!commenter) return res.redirect('/admin/commenters');
+    // Restore trust if they had enough approvals
+    const trusted = commenter.approved_count >= 5 ? 1 : 0;
+    db.prepare(`
+        UPDATE commenters SET is_flagged=0, is_trusted=?, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(trusted, req.params.id);
+    res.redirect('/admin/commenters');
+});
+
 module.exports = router;
 
 // ═══════════════════════════════════════════════════════════════
