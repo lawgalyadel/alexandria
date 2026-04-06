@@ -61,10 +61,12 @@ app.use((req, res, next) => {
 const publicRoutes = require('./routes/public');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
+const submissionsRoute = require('./routes/submissions');
 
 app.use('/', publicRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
+app.use('/submit', submissionsRoute);
 
 // ─── 404 ───
 app.use((req, res) => {

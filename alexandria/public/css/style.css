@@ -2,7 +2,7 @@
             --ink: #1a1a1a;
             --ink-light: #4a4a4a;
             --ink-faint: #7a7a7a;
-            --cream: #F2F1EC;
+            --cream: #E8E6DC;
             --white: #ffffff;
             --border: #e8e4de;
             --border-light: #f2efe9;
@@ -1750,4 +1750,162 @@
     .search-page { padding: 2rem 1.25rem; }
     .static-page { padding: 1.5rem 1.25rem; }
     .share-buttons { flex-wrap: wrap; }
+}
+
+/* ═══════════════════════════════════════
+   SUBJECTS CAROUSEL
+═══════════════════════════════════════ */
+.subjects-slideshow-wrap {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.subjects-slideshow {
+    flex: 1;
+    overflow: hidden;
+}
+
+.subjects-track {
+    display: flex;
+    gap: 20px;
+    transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+}
+
+.subject-slide {
+    flex-shrink: 0;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2rem 1.5rem 1.75rem;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.subject-slide:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.subject-slide-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    margin-bottom: 0.25rem;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.subject-slide:hover .subject-slide-icon {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.subject-slide .subject-name {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+    transition: color 0.2s ease;
+}
+
+.subject-slide:hover .subject-name {
+    color: var(--accent-dark);
+}
+
+.subject-slide .subject-desc {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    line-height: 1.55;
+    max-width: 200px;
+}
+
+.subject-slide .subject-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    width: 100%;
+}
+
+.subjects-slide-btn {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    align-self: center;
+}
+
+.subjects-slide-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-bg);
+}
+
+.subjects-slide-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+.subjects-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
+
+.subjects-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: none;
+    background: var(--border);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.subjects-dot.active {
+    background: var(--accent);
+    transform: scale(1.35);
+}
+
+[data-theme="dark"] .subject-slide {
+    background: var(--white);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .subject-slide:hover {
+    background: var(--accent-bg);
+    border-color: var(--accent);
 }

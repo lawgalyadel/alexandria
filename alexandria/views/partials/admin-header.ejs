@@ -21,6 +21,7 @@
                 <% if (user && (user.role === 'admin' || user.role === 'managing_editor')) { %>
                     <a href="/admin/subjects" class="<%= currentPath.startsWith('/admin/subjects') ? 'active' : '' %>">Subjects</a>
                 <% } %>
+                <a href="/admin/submissions" class="<%= currentPath.startsWith('/admin/submissions') ? 'active' : '' %>">Submissions</a>
                 <a href="/admin/media" class="<%= currentPath.startsWith('/admin/media') ? 'active' : '' %>">Media</a>
                 <% if (user && user.role === 'admin') { %>
                     <a href="/admin/users" class="<%= currentPath.startsWith('/admin/users') ? 'active' : '' %>">Users</a>

@@ -411,3 +411,61 @@ router.post('/users/:id/delete', requireAuth, requireRole('admin'), (req, res) =
 });
 
 module.exports = router;
+
+// ═══════════════════════════════════════════════════════════════
+// SUBMISSIONS (view & manage public article submissions)
+// ═══════════════════════════════════════════════════════════════
+router.get('/submissions', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const status = req.query.status || '';
+
+    let query = `
+        SELECT s.*, sub.name as subject_name
+        FROM submissions s
+        LEFT JOIN subjects sub ON s.subject_id = sub.id
+    `;
+    if (status) query += ` WHERE s.status = '${status}'`;
+    query += ' ORDER BY s.created_at DESC';
+
+    let submissions = [];
+    try {
+        submissions = db.prepare(query).all();
+    } catch (e) { /* table may not exist yet */ }
+
+    res.render('admin/submissions/index', {
+        title: 'Submissions \u2013 Alexandria Admin',
+        submissions,
+        status
+    });
+});
+
+router.get('/submissions/:id', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    let submission = null;
+    try {
+        submission = db.prepare(`
+            SELECT s.*, sub.name as subject_name
+            FROM submissions s
+            LEFT JOIN subjects sub ON s.subject_id = sub.id
+            WHERE s.id = ?
+        `).get(req.params.id);
+    } catch (e) {}
+
+    if (!submission) return res.redirect('/admin/submissions');
+    res.render('admin/submissions/detail', {
+        title: 'Review Submission \u2013 Alexandria Admin',
+        submission
+    });
+});
+
+router.post('/submissions/:id/update', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const { status, admin_notes } = req.body;
+    try {
+        db.prepare(`
+            UPDATE submissions SET status = ?, admin_notes = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `).run(status, admin_notes || null, req.params.id);
+    } catch (e) {}
+    res.redirect(`/admin/submissions/${req.params.id}`);
+});

@@ -155,3 +155,20 @@ CREATE INDEX IF NOT EXISTS idx_articles_view_count ON articles(view_count);
 CREATE INDEX IF NOT EXISTS idx_authors_slug ON authors(slug);
 CREATE INDEX IF NOT EXISTS idx_subjects_slug ON subjects(slug);
 CREATE INDEX IF NOT EXISTS idx_tags_slug ON tags(slug);
+
+-- ═══════════════════════════════════════
+-- SUBMISSIONS (public article submissions)
+-- ═══════════════════════════════════════
+CREATE TABLE IF NOT EXISTS submissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    title TEXT NOT NULL,
+    subject_id INTEGER REFERENCES subjects(id),
+    abstract TEXT NOT NULL,
+    body TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','reviewing','accepted','rejected')),
+    admin_notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
