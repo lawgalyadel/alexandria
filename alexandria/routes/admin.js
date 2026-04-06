@@ -64,10 +64,38 @@ router.get('/logout', (req, res) => {
 router.get('/', requireAuth, (req, res) => {
     const db = req.app.locals.db;
 
-    const totalArticles = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'published'").get().c;
-    const totalDrafts = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'draft'").get().c;
-    const totalAuthors = db.prepare('SELECT COUNT(*) as c FROM authors').get().c;
-    const totalViews = db.prepare("SELECT COALESCE(SUM(view_count),0) as c FROM articles WHERE status = 'published'").get().c;
+    const totalArticles   = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'published'").get().c;
+    const totalDrafts     = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'draft'").get().c;
+    const totalAuthors    = db.prepare('SELECT COUNT(*) as c FROM authors').get().c;
+    const totalViews      = db.prepare("SELECT COALESCE(SUM(view_count),0) as c FROM articles WHERE status = 'published'").get().c;
+
+    const recentPublished = db.prepare(`
+        SELECT COUNT(*) as c FROM articles
+        WHERE status = 'published' AND publish_date >= datetime('now', '-7 days')
+    `).get().c;
+
+    let totalComments = 0;
+    try { totalComments = db.prepare("SELECT COUNT(*) as c FROM comments").get().c; } catch (e) {}
+
+    const topArticles = db.prepare(`
+        SELECT a.id, a.title, a.slug, a.view_count,
+               GROUP_CONCAT(DISTINCT s.name) as subject_names
+        FROM articles a
+        LEFT JOIN article_subjects asub ON a.id = asub.article_id
+        LEFT JOIN subjects s ON asub.subject_id = s.id
+        WHERE a.status = 'published'
+        GROUP BY a.id ORDER BY a.view_count DESC LIMIT 5
+    `).all();
+
+    const viewsBySubject = db.prepare(`
+        SELECT s.id, s.name, s.slug,
+               COALESCE(SUM(a.view_count), 0) as total_views,
+               COUNT(DISTINCT a.id) as article_count
+        FROM subjects s
+        LEFT JOIN article_subjects asub ON s.id = asub.subject_id
+        LEFT JOIN articles a ON asub.article_id = a.id AND a.status = 'published'
+        GROUP BY s.id ORDER BY total_views DESC
+    `).all();
 
     const recentArticles = db.prepare(`
         SELECT a.*, GROUP_CONCAT(DISTINCT s.name) as subject_names
@@ -78,9 +106,11 @@ router.get('/', requireAuth, (req, res) => {
     `).all();
 
     res.render('admin/dashboard', {
-        title: 'Dashboard — Alexandria Admin',
-        stats: { totalArticles, totalDrafts, totalAuthors, totalViews },
-        recentArticles
+        title: 'Dashboard \u2013 Alexandria Admin',
+        stats: { totalArticles, totalDrafts, totalAuthors, totalViews, recentPublished, totalComments },
+        recentArticles,
+        topArticles,
+        viewsBySubject
     });
 });
 

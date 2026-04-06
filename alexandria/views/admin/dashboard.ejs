@@ -1,44 +1,114 @@
 <%- include('../partials/admin-header') %>
 
-    <div class="admin-page-header">
-        <h1>Dashboard</h1>
-        <a href="/admin/articles/new" class="btn btn-primary">New Article</a>
-    </div>
+<div class="admin-page-header">
+    <h1>Dashboard</h1>
+    <a href="/admin/articles/new" class="btn btn-primary">New Article</a>
+</div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-value"><%= stats.totalArticles %></div>
-            <div class="stat-label">Published Articles</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><%= stats.totalDrafts %></div>
-            <div class="stat-label">Drafts</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><%= stats.totalAuthors %></div>
-            <div class="stat-label">Authors</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"><%= stats.totalViews.toLocaleString() %></div>
-            <div class="stat-label">Total Views</div>
-        </div>
+<!-- Primary stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value"><%= stats.totalArticles %></div>
+        <div class="stat-label">Published Articles</div>
     </div>
+    <div class="stat-card">
+        <div class="stat-value"><%= stats.totalDrafts %></div>
+        <div class="stat-label">Drafts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value"><%= stats.totalAuthors %></div>
+        <div class="stat-label">Authors</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value"><%= stats.totalViews.toLocaleString() %></div>
+        <div class="stat-label">Total Views</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value"><%= stats.recentPublished %></div>
+        <div class="stat-label">Published (7 days)</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value"><%= stats.totalComments.toLocaleString() %></div>
+        <div class="stat-label">Total Comments</div>
+    </div>
+</div>
 
+<!-- Engagement analytics row -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+    <!-- Top articles by views -->
     <div class="admin-card">
-        <h2 style="font-size:1.1rem;margin-bottom:1rem;">Recent Articles</h2>
-        <table>
-            <thead><tr><th>Title</th><th>Status</th><th>Subjects</th><th>Updated</th></tr></thead>
-            <tbody>
-                <% for (const a of recentArticles) { %>
-                    <tr>
-                        <td><a href="/admin/articles/<%= a.id %>/edit"><%= a.title %></a></td>
-                        <td><span class="status-badge status-<%= a.status %>"><%= a.status %></span></td>
-                        <td><%= a.subject_names || '—' %></td>
-                        <td><%= new Date(a.updated_at).toLocaleDateString() %></td>
-                    </tr>
+        <h2 style="font-size:1.05rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Top Articles by Views
+        </h2>
+        <% if (topArticles && topArticles.length) { %>
+            <% const maxViews = topArticles[0].view_count || 1; %>
+            <div style="display:flex;flex-direction:column;gap:0.85rem;">
+                <% for (const a of topArticles) { %>
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.3rem;">
+                        <a href="/admin/articles/<%= a.id %>/edit" style="font-size:0.85rem;font-weight:500;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75%;" title="<%= a.title %>"><%= a.title %></a>
+                        <span style="font-size:0.8rem;flex-shrink:0;margin-left:0.5rem;opacity:0.6;"><%= (a.view_count || 0).toLocaleString() %></span>
+                    </div>
+                    <div style="height:5px;background:rgba(128,128,128,0.15);border-radius:3px;overflow:hidden;">
+                        <div style="height:100%;background:var(--accent,#c9922a);border-radius:3px;width:<%= Math.round(((a.view_count||0)/maxViews)*100) %>%;"></div>
+                    </div>
+                    <div style="font-size:0.75rem;opacity:0.5;margin-top:0.2rem;"><%= a.subject_names || '—' %></div>
+                </div>
                 <% } %>
-            </tbody>
-        </table>
+            </div>
+        <% } else { %>
+            <p style="font-size:0.9rem;opacity:0.5;">No published articles yet.</p>
+        <% } %>
     </div>
+
+    <!-- Views by subject -->
+    <div class="admin-card">
+        <h2 style="font-size:1.05rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            Engagement by Subject
+        </h2>
+        <% if (viewsBySubject && viewsBySubject.length) { %>
+            <% const maxSubjectViews = Math.max(...viewsBySubject.map(s => s.total_views)) || 1; %>
+            <div style="display:flex;flex-direction:column;gap:0.85rem;">
+                <% for (const s of viewsBySubject) { %>
+                <div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.3rem;">
+                        <span style="font-size:0.85rem;font-weight:500;"><%= s.name %></span>
+                        <span style="font-size:0.8rem;opacity:0.6;"><%= (s.total_views||0).toLocaleString() %> views &middot; <%= s.article_count %> articles</span>
+                    </div>
+                    <div style="height:5px;background:rgba(128,128,128,0.15);border-radius:3px;overflow:hidden;">
+                        <div style="height:100%;background:var(--accent,#c9922a);opacity:0.75;border-radius:3px;width:<%= Math.round(((s.total_views||0)/maxSubjectViews)*100) %>%;"></div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        <% } else { %>
+            <p style="font-size:0.9rem;opacity:0.5;">No subjects found.</p>
+        <% } %>
+    </div>
+</div>
+
+<!-- Recent articles table -->
+<div class="admin-card">
+    <h2 style="font-size:1.1rem;margin-bottom:1rem;">Recent Articles</h2>
+    <table>
+        <thead>
+            <tr><th>Title</th><th>Status</th><th>Subjects</th><th>Views</th><th>Updated</th></tr>
+        </thead>
+        <tbody>
+            <% for (const a of recentArticles) { %>
+                <tr>
+                    <td><a href="/admin/articles/<%= a.id %>/edit"><%= a.title %></a></td>
+                    <td><span class="status-badge status-<%= a.status %>"><%= a.status %></span></td>
+                    <td><%= a.subject_names || '—' %></td>
+                    <td style="font-variant-numeric:tabular-nums;"><%= (a.view_count||0).toLocaleString() %></td>
+                    <td><%= new Date(a.updated_at).toLocaleDateString() %></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
 
 <%- include('../partials/admin-footer') %>
