@@ -9,6 +9,8 @@
             --accent: #c9922a;
             --accent-dark: #a87821;
             --accent-bg: #fdf6e8;
+            --accent-cool: #2f7f8f;
+            --accent-cool-dark: #245f6b;
             --red-retract: #c0392b;
             --img-from: #f0e8d8;
             --img-mid: #e4d8c0;
@@ -40,6 +42,8 @@
             --accent: #d4af37;
             --accent-dark: #e8c84a;
             --accent-bg: rgba(212,175,55,0.08);
+            --accent-cool: #68b8c8;
+            --accent-cool-dark: #89d1de;
             --img-from: #2a2317;
             --img-mid: #1e1a10;
             --img-to: #342a18;
@@ -1566,6 +1570,50 @@
     font-weight: 600;
     color: var(--ink);
     margin: 2rem 0 0.75rem;
+}
+
+.static-page .prose a {
+    color: var(--accent-cool);
+    text-decoration-color: color-mix(in srgb, var(--accent-cool) 45%, transparent);
+    text-underline-offset: 0.15em;
+}
+
+.static-page .prose a:visited {
+    color: var(--accent-cool);
+}
+
+.static-page .prose a:hover {
+    color: var(--accent-cool-dark);
+}
+
+.editorial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.9rem;
+    margin-top: 1rem;
+}
+
+.editor-card {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-cool);
+    border-radius: 6px;
+    background: var(--white);
+    padding: 0.85rem 1rem;
+}
+
+.editor-card h3 {
+    font-size: 1rem;
+    line-height: 1.35;
+    margin: 0 0 0.15rem;
+    color: var(--ink);
+}
+
+.editor-card p {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    margin: 0;
+    color: var(--ink-faint);
 }
 
 .contact-form {
