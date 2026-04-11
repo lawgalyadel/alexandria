@@ -245,7 +245,17 @@ router.get('/author/:slug', (req, res) => {
 // ABOUT & CONTACT
 // ═══════════════════════════════════════
 router.get('/about', (req, res) => {
-    res.render('public/about', { title: 'About — Alexandria' });
+    const db = req.app.locals.db;
+    const editors = db.prepare(`
+        SELECT id, name, slug, bio, headshot_url
+        FROM authors
+        ORDER BY name COLLATE NOCASE ASC
+    `).all();
+
+    res.render('public/about', {
+        title: 'About — Alexandria',
+        editors
+    });
 });
 
 router.get('/contact', (req, res) => {
