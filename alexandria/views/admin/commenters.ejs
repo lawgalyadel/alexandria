@@ -1,0 +1,62 @@
+<%- include('../partials/admin-header') %>
+
+<div class="admin-page-header">
+    <h1>Commenters</h1>
+    <a href="/admin/comments" class="btn">← Back to Comments</a>
+</div>
+
+<div class="admin-card">
+    <p style="font-size:0.88rem;opacity:0.6;margin-bottom:1.25rem;">Commenters with 5+ approved comments are automatically trusted. Flagging a commenter revokes trust and puts their future comments back into moderation.</p>
+    <% if (!commenters.length) { %>
+        <p style="opacity:0.5;">No commenters yet.</p>
+    <% } else { %>
+    <table>
+        <thead>
+            <tr><th>Name</th><th>Email</th><th>Approved</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            <% for (const c of commenters) { %>
+            <tr>
+                <td style="font-weight:500;font-size:0.9rem;"><%= c.name %></td>
+                <td style="font-size:0.85rem;opacity:0.7;"><%= c.email %></td>
+                <td style="font-variant-numeric:tabular-nums;"><%= c.approved_count %> / 5</td>
+                <td>
+                    <% if (c.is_flagged) { %>
+                        <span style="font-size:0.78rem;background:#dc2626;color:#fff;padding:0.2rem 0.5rem;border-radius:10px;">flagged</span>
+                    <% } else if (c.is_trusted) { %>
+                        <span style="font-size:0.78rem;background:#16a34a;color:#fff;padding:0.2rem 0.5rem;border-radius:10px;">trusted</span>
+                    <% } else { %>
+                        <span style="font-size:0.78rem;opacity:0.5;">standard</span>
+                    <% } %>
+                </td>
+                <td>
+                    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                        <% if (!c.is_trusted && !c.is_flagged) { %>
+                            <form method="POST" action="/admin/commenters/<%= c.id %>/trust" style="margin:0;">
+                                <button type="submit" class="btn btn-primary" style="font-size:0.75rem;padding:0.25rem 0.6rem;">Trust</button>
+                            </form>
+                        <% } %>
+                        <% if (c.is_trusted && !c.is_flagged) { %>
+                            <form method="POST" action="/admin/commenters/<%= c.id %>/untrust" style="margin:0;">
+                                <button type="submit" class="btn" style="font-size:0.75rem;padding:0.25rem 0.6rem;">Revoke Trust</button>
+                            </form>
+                        <% } %>
+                        <% if (!c.is_flagged) { %>
+                            <form method="POST" action="/admin/commenters/<%= c.id %>/flag" style="margin:0;">
+                                <button type="submit" class="btn" style="font-size:0.75rem;padding:0.25rem 0.6rem;border-color:#dc2626;color:#dc2626;">Flag</button>
+                            </form>
+                        <% } else { %>
+                            <form method="POST" action="/admin/commenters/<%= c.id %>/unflag" style="margin:0;">
+                                <button type="submit" class="btn btn-primary" style="font-size:0.75rem;padding:0.25rem 0.6rem;">Unflag</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <% } %>
+</div>
+
+<%- include('../partials/admin-footer') %>

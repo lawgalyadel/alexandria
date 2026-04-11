@@ -207,10 +207,14 @@ router.get('/article/:slug', (req, res) => {
         }
     }
 
+    // Load approved comments
+    const comments = db.prepare(`SELECT * FROM comments WHERE article_id = ? AND status = 'approved' ORDER BY created_at ASC`).all(article.id);
+
     res.render('public/article', {
         title: `${article.title} — Alexandria`,
         article,
-        related
+        related,
+        comments
     });
 });
 

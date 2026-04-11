@@ -31,11 +31,13 @@
             </div>
             <nav class="nav-bar" id="navBar">
                 <ul class="nav-links">
+                    <li><a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">Home</a></li>
                     <% for (const s of subjects) { %>
                         <li><a href="/subject/<%= s.slug %>" class="<%= currentPath === '/subject/' + s.slug ? 'active' : '' %>"><%= s.name %></a></li>
                     <% } %>
                     <li><a href="/about" class="<%= currentPath === '/about' ? 'active' : '' %>">About</a></li>
                     <li><a href="/contact" class="<%= currentPath === '/contact' ? 'active' : '' %>">Contact</a></li>
+                    <li><a href="/submit" class="<%= currentPath === '/submit' ? 'active' : '' %>" style="color:var(--accent);font-weight:600;">Submit</a></li>
                 </ul>
             </nav>
         </div>

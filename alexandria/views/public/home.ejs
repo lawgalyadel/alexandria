@@ -7,22 +7,44 @@ function formatDate(d) {
 }
 %>
 
-    <section class="hero">
-        <div class="hero-content reveal">
-            <h1><span>A Journal of Ideas</span>Alexandria</h1>
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section class="hero hero--animated">
+        <!-- Pulsing gold glows -->
+        <div class="hero-glow hero-glow--left"></div>
+        <div class="hero-glow hero-glow--right"></div>
+        <div class="hero-glow hero-glow--center"></div>
+        <!-- Diagonal texture -->
+        <div class="hero-texture"></div>
+
+        <div class="hero-content hero-content--float reveal">
+            <div class="hero-tagline-wrap">
+                <span class="hero-line hero-line--left"></span>
+                <h1><span>A Journal of Ideas</span>Alexandria</h1>
+                <span class="hero-line hero-line--right"></span>
+            </div>
             <p class="hero-description">Rigorous analysis and thoughtful discourse across history, politics, law, economics, and philosophy.</p>
+            <div class="hero-cta">
+                <a href="/submit" class="hero-btn hero-btn--primary">Submit an Article</a>
+                <a href="#latest" class="hero-btn hero-btn--ghost">Read Latest</a>
+            </div>
         </div>
     </section>
 
+    <!-- ═══════════════ FEATURED ═══════════════ -->
     <% if (featured) { %>
     <section class="featured-section">
         <div class="container">
-            <div class="featured-label">Featured</div>
+            <div class="featured-label">
+                <span class="label-bar"></span>Featured
+            </div>
             <div class="featured-article reveal">
-                <div class="featured-image">
+                <div class="featured-image featured-image--shimmer">
                     <% if (featured.cover_image_url) { %>
                         <img src="<%= featured.cover_image_url %>" alt="<%= featured.cover_image_alt || featured.title %>" style="width:100%;height:100%;object-fit:cover;">
                     <% } %>
+                    <div class="featured-image-overlay"></div>
+                    <div class="featured-corner-accent"></div>
+                    <div class="featured-shimmer"></div>
                 </div>
                 <div class="featured-content">
                     <div class="featured-subject"><%= featured.subject_names %></div>
@@ -43,28 +65,50 @@ function formatDate(d) {
     </section>
     <% } %>
 
-    <section class="subjects-section">
-        <div class="container">
-            <div class="section-label">Explore by Discipline</div>
-            <div class="subjects-grid reveal">
-                <% for (const s of subjects) { %>
-                    <a class="subject-tile" href="/subject/<%= s.slug %>">
-                        <h3 class="subject-name"><%= s.name %></h3>
-                        <p class="subject-count"><%= subjectCounts[s.id] || 0 %> articles</p>
-                    </a>
-                <% } %>
+    <!-- ═══════════════ SUBJECTS CAROUSEL ═══════════════ -->
+    <section class="subjects-section subjects-section--enhanced">
+        <div class="subjects-bg-glow subjects-bg-glow--left"></div>
+        <div class="subjects-bg-glow subjects-bg-glow--right"></div>
+        <div class="container" style="position:relative;">
+            <div class="section-label section-label--bar">Explore by Discipline</div>
+            <div class="subjects-slideshow-wrap">
+                <button class="subjects-slide-btn subjects-slide-btn--prev" id="slidePrev" aria-label="Previous">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <div class="subjects-slideshow" id="subjectsSlideshow">
+                    <div class="subjects-track" id="subjectsTrack">
+                        <% for (const s of subjects) { %>
+                        <a class="subject-slide" href="/subject/<%= s.slug %>">
+                            <div class="subject-slide-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            </div>
+                            <h3 class="subject-name"><%= s.name %></h3>
+                            <% if (s.description) { %>
+                                <p class="subject-desc"><%= s.description.substring(0, 60) %><%= s.description.length > 60 ? '…' : '' %></p>
+                            <% } %>
+                            <p class="subject-count"><%= subjectCounts[s.id] || 0 %> articles</p>
+                        </a>
+                        <% } %>
+                    </div>
+                </div>
+                <button class="subjects-slide-btn subjects-slide-btn--next" id="slideNext" aria-label="Next">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
             </div>
+            <div class="subjects-dots" id="subjectsDots"></div>
         </div>
     </section>
 
-    <section class="latest-section">
+    <!-- ═══════════════ LATEST ═══════════════ -->
+    <section class="latest-section" id="latest">
         <div class="container">
             <div class="latest-header">
-                <h2>Latest</h2>
+                <h2 class="section-heading--bar">Latest</h2>
             </div>
             <div class="article-feed">
-                <% for (const a of latest) { %>
-                    <a href="/article/<%= a.slug %>" class="article-item reveal">
+                <% for (let i = 0; i < latest.length; i++) {
+                    const a = latest[i]; %>
+                    <a href="/article/<%= a.slug %>" class="article-item article-item--hover reveal" style="transition-delay:<%= (i * 0.07).toFixed(2) %>s">
                         <div class="article-item-text">
                             <div class="article-item-subject"><%= a.subject_names %></div>
                             <h3 class="article-item-title"><%= a.title %></h3>
@@ -76,19 +120,26 @@ function formatDate(d) {
                                 <%= formatDate(a.publish_date) %>
                             </div>
                         </div>
-                        <% if (a.cover_image_url) { %>
-                            <img src="<%= a.cover_image_url %>" alt="<%= a.cover_image_alt || '' %>" class="article-item-thumb">
-                        <% } else { %>
-                            <div class="article-item-thumb"></div>
-                        <% } %>
+                        <div class="article-item-thumb-wrap">
+                            <% if (a.cover_image_url) { %>
+                                <img src="<%= a.cover_image_url %>" alt="<%= a.cover_image_alt || '' %>" class="article-item-thumb">
+                            <% } else { %>
+                                <div class="article-item-thumb"></div>
+                            <% } %>
+                            <div class="article-item-thumb-overlay"></div>
+                        </div>
+                        <div class="article-item-top-bar"></div>
                     </a>
                 <% } %>
             </div>
         </div>
     </section>
 
-    <section class="subscribe-banner">
-        <div class="subscribe-inner">
+    <!-- ═══════════════ SUBSCRIBE ═══════════════ -->
+    <section class="subscribe-banner subscribe-banner--animated">
+        <div class="subscribe-pattern"></div>
+        <div class="subscribe-glow"></div>
+        <div class="subscribe-inner" style="position:relative;z-index:1;">
             <h2>Stay informed</h2>
             <p>Get new articles delivered directly to your inbox. Free, no spam, unsubscribe any time.</p>
             <form class="subscribe-form" onsubmit="event.preventDefault();">
@@ -99,3 +150,63 @@ function formatDate(d) {
     </section>
 
 <%- include('../partials/footer') %>
+
+<script>
+(function () {
+    const track    = document.getElementById('subjectsTrack');
+    const dotsWrap = document.getElementById('subjectsDots');
+    const prevBtn  = document.getElementById('slidePrev');
+    const nextBtn  = document.getElementById('slideNext');
+    if (!track) return;
+    const slides = Array.from(track.querySelectorAll('.subject-slide'));
+    if (!slides.length) return;
+    let current = 0, autoTimer = null;
+
+    function visibleCount() {
+        if (window.innerWidth >= 900) return 3;
+        if (window.innerWidth >= 560) return 2;
+        return 1;
+    }
+    function maxIndex() { return Math.max(0, slides.length - visibleCount()); }
+    function setSlideWidths() {
+        const vc = visibleCount(), gap = 20;
+        const trackWidth = track.parentElement.offsetWidth;
+        const slideWidth = (trackWidth - gap * (vc - 1)) / vc;
+        slides.forEach(s => { s.style.flex = `0 0 ${slideWidth}px`; });
+    }
+    function buildDots() {
+        dotsWrap.innerHTML = '';
+        for (let i = 0; i <= maxIndex(); i++) {
+            const btn = document.createElement('button');
+            btn.className = 'subjects-dot' + (i === current ? ' active' : '');
+            btn.setAttribute('aria-label', `Go to slide ${i + 1}`);
+            btn.addEventListener('click', () => { stopAuto(); goTo(i); startAuto(); });
+            dotsWrap.appendChild(btn);
+        }
+    }
+    function goTo(index) {
+        current = Math.max(0, Math.min(index, maxIndex()));
+        const slideWidth = slides[0].offsetWidth + 20;
+        track.style.transform = `translateX(-${current * slideWidth}px)`;
+        Array.from(dotsWrap.querySelectorAll('.subjects-dot')).forEach((d, i) => d.classList.toggle('active', i === current));
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current >= maxIndex();
+    }
+    function next() { goTo(current >= maxIndex() ? 0 : current + 1); }
+    function prev() { goTo(current <= 0 ? maxIndex() : current - 1); }
+    function startAuto() { stopAuto(); autoTimer = setInterval(next, 4000); }
+    function stopAuto() { if (autoTimer) clearInterval(autoTimer); }
+    prevBtn.addEventListener('click', () => { stopAuto(); prev(); startAuto(); });
+    nextBtn.addEventListener('click', () => { stopAuto(); next(); startAuto(); });
+    let touchStartX = 0;
+    track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; stopAuto(); }, { passive: true });
+    track.addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) diff > 0 ? next() : prev();
+        startAuto();
+    });
+    function init() { setSlideWidths(); buildDots(); goTo(0); startAuto(); }
+    window.addEventListener('resize', () => { setSlideWidths(); buildDots(); goTo(Math.min(current, maxIndex())); });
+    init();
+})();
+</script>

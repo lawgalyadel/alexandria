@@ -1,0 +1,67 @@
+<%- include('../partials/admin-header') %>
+
+<div class="admin-page-header">
+    <h1>Comments</h1>
+    <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+        <a href="/admin/comments" class="btn" style="font-size:0.82rem;<%= !status ? 'background:var(--primary);color:#fff;' : '' %>">All (<%= counts.all %>)</a>
+        <a href="/admin/comments?status=pending" class="btn" style="font-size:0.82rem;<%= status==='pending' ? 'background:var(--primary);color:#fff;' : '' %>">Pending (<%= counts.pending %>)</a>
+        <a href="/admin/comments?status=approved" class="btn" style="font-size:0.82rem;<%= status==='approved' ? 'background:var(--primary);color:#fff;' : '' %>">Approved (<%= counts.approved %>)</a>
+        <a href="/admin/comments?status=flagged" class="btn" style="font-size:0.82rem;<%= status==='flagged' ? 'background:var(--primary);color:#fff;' : '' %>">Flagged (<%= counts.flagged %>)</a>
+        <a href="/admin/commenters" class="btn" style="font-size:0.82rem;margin-left:0.5rem;">Manage Commenters →</a>
+    </div>
+</div>
+
+<div class="admin-card">
+    <% if (!comments.length) { %>
+        <p style="font-size:0.95rem;opacity:0.5;padding:0.5rem 0;">No comments found.</p>
+    <% } else { %>
+    <table>
+        <thead>
+            <tr><th>Comment</th><th>Author</th><th>Article</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            <% for (const c of comments) { %>
+            <tr>
+                <td style="max-width:280px;">
+                    <p style="font-size:0.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= c.body.substring(0, 100) %><%= c.body.length > 100 ? '…' : '' %></p>
+                </td>
+                <td>
+                    <span style="font-weight:500;font-size:0.88rem;"><%= c.name %></span><br>
+                    <span style="font-size:0.78rem;opacity:0.55;"><%= c.email %></span>
+                    <% if (c.is_trusted) { %>
+                        <span style="font-size:0.72rem;background:#16a34a;color:#fff;padding:0.1rem 0.4rem;border-radius:10px;margin-left:4px;">trusted</span>
+                    <% } %>
+                </td>
+                <td style="font-size:0.85rem;"><a href="/article/<%= c.article_slug %>"><%= c.article_title ? c.article_title.substring(0, 35) + (c.article_title.length > 35 ? '…' : '') : '—' %></a></td>
+                <td><span class="status-badge status-<%= c.status %>"><%= c.status %></span></td>
+                <td style="font-size:0.82rem;white-space:nowrap;"><%= new Date(c.created_at).toLocaleDateString() %></td>
+                <td>
+                    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                        <% if (c.status !== 'approved') { %>
+                            <form method="POST" action="/admin/comments/<%= c.id %>/approve" style="margin:0;">
+                                <button type="submit" class="btn btn-primary" style="font-size:0.75rem;padding:0.25rem 0.6rem;">Approve</button>
+                            </form>
+                        <% } %>
+                        <% if (c.status !== 'rejected') { %>
+                            <form method="POST" action="/admin/comments/<%= c.id %>/reject" style="margin:0;">
+                                <button type="submit" class="btn" style="font-size:0.75rem;padding:0.25rem 0.6rem;">Reject</button>
+                            </form>
+                        <% } %>
+                        <% if (c.status !== 'flagged') { %>
+                            <form method="POST" action="/admin/comments/<%= c.id %>/flag" style="margin:0;">
+                                <button type="submit" class="btn" style="font-size:0.75rem;padding:0.25rem 0.6rem;border-color:#dc2626;color:#dc2626;">Flag</button>
+                            </form>
+                        <% } %>
+                        <form method="POST" action="/admin/comments/<%= c.id %>/delete" style="margin:0;">
+                            <button type="submit" class="btn" style="font-size:0.75rem;padding:0.25rem 0.6rem;" onclick="return confirm('Delete this comment?')">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <% } %>
+</div>
+
+<%- include('../partials/admin-footer') %>

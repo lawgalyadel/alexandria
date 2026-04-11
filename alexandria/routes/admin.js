@@ -64,10 +64,38 @@ router.get('/logout', (req, res) => {
 router.get('/', requireAuth, (req, res) => {
     const db = req.app.locals.db;
 
-    const totalArticles = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'published'").get().c;
-    const totalDrafts = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'draft'").get().c;
-    const totalAuthors = db.prepare('SELECT COUNT(*) as c FROM authors').get().c;
-    const totalViews = db.prepare("SELECT COALESCE(SUM(view_count),0) as c FROM articles WHERE status = 'published'").get().c;
+    const totalArticles   = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'published'").get().c;
+    const totalDrafts     = db.prepare("SELECT COUNT(*) as c FROM articles WHERE status = 'draft'").get().c;
+    const totalAuthors    = db.prepare('SELECT COUNT(*) as c FROM authors').get().c;
+    const totalViews      = db.prepare("SELECT COALESCE(SUM(view_count),0) as c FROM articles WHERE status = 'published'").get().c;
+
+    const recentPublished = db.prepare(`
+        SELECT COUNT(*) as c FROM articles
+        WHERE status = 'published' AND publish_date >= datetime('now', '-7 days')
+    `).get().c;
+
+    let totalComments = 0;
+    try { totalComments = db.prepare("SELECT COUNT(*) as c FROM comments").get().c; } catch (e) {}
+
+    const topArticles = db.prepare(`
+        SELECT a.id, a.title, a.slug, a.view_count,
+               GROUP_CONCAT(DISTINCT s.name) as subject_names
+        FROM articles a
+        LEFT JOIN article_subjects asub ON a.id = asub.article_id
+        LEFT JOIN subjects s ON asub.subject_id = s.id
+        WHERE a.status = 'published'
+        GROUP BY a.id ORDER BY a.view_count DESC LIMIT 5
+    `).all();
+
+    const viewsBySubject = db.prepare(`
+        SELECT s.id, s.name, s.slug,
+               COALESCE(SUM(a.view_count), 0) as total_views,
+               COUNT(DISTINCT a.id) as article_count
+        FROM subjects s
+        LEFT JOIN article_subjects asub ON s.id = asub.subject_id
+        LEFT JOIN articles a ON asub.article_id = a.id AND a.status = 'published'
+        GROUP BY s.id ORDER BY total_views DESC
+    `).all();
 
     const recentArticles = db.prepare(`
         SELECT a.*, GROUP_CONCAT(DISTINCT s.name) as subject_names
@@ -78,9 +106,11 @@ router.get('/', requireAuth, (req, res) => {
     `).all();
 
     res.render('admin/dashboard', {
-        title: 'Dashboard — Alexandria Admin',
-        stats: { totalArticles, totalDrafts, totalAuthors, totalViews },
-        recentArticles
+        title: 'Dashboard \u2013 Alexandria Admin',
+        stats: { totalArticles, totalDrafts, totalAuthors, totalViews, recentPublished, totalComments },
+        recentArticles,
+        topArticles,
+        viewsBySubject
     });
 });
 
@@ -380,4 +410,228 @@ router.post('/users/:id/delete', requireAuth, requireRole('admin'), (req, res) =
     res.redirect('/admin/users');
 });
 
+// ═══════════════════════════════════════════════════════════════
+// COMMENTS MODERATION
+// ═══════════════════════════════════════════════════════════════
+
+router.get('/comments', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const status = req.query.status || '';
+
+    let where = status ? `WHERE c.status = '${status}'` : '';
+
+    const comments = db.prepare(`
+        SELECT c.*, a.title as article_title, a.slug as article_slug,
+               cm.is_trusted, cm.is_flagged, cm.approved_count
+        FROM comments c
+        LEFT JOIN articles a ON c.article_id = a.id
+        LEFT JOIN commenters cm ON c.commenter_id = cm.id
+        ${where}
+        ORDER BY c.created_at DESC
+        LIMIT 100
+    `).all();
+
+    const counts = {
+        all:      db.prepare("SELECT COUNT(*) as n FROM comments").get().n,
+        pending:  db.prepare("SELECT COUNT(*) as n FROM comments WHERE status='pending'").get().n,
+        approved: db.prepare("SELECT COUNT(*) as n FROM comments WHERE status='approved'").get().n,
+        flagged:  db.prepare("SELECT COUNT(*) as n FROM comments WHERE status='flagged'").get().n,
+    };
+
+    res.render('admin/comments', {
+        title: 'Comments \u2013 Alexandria Admin',
+        comments, counts, status
+    });
+});
+
+// Helper: after approving a comment, check if commenter earns trust
+function checkAndGrantTrust(db, commenterId) {
+    if (!commenterId) return;
+    const commenter = db.prepare('SELECT * FROM commenters WHERE id = ?').get(commenterId);
+    if (!commenter || commenter.is_flagged) return;
+    const newCount = (commenter.approved_count || 0) + 1;
+    const becomesTrusted = newCount >= 5 ? 1 : commenter.is_trusted;
+    db.prepare(`
+        UPDATE commenters
+        SET approved_count = ?, is_trusted = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+    `).run(newCount, becomesTrusted, commenterId);
+}
+
+// Helper: after rejecting, decrement approved_count (un-approving)
+function decrementTrust(db, commenterId) {
+    if (!commenterId) return;
+    const commenter = db.prepare('SELECT * FROM commenters WHERE id = ?').get(commenterId);
+    if (!commenter) return;
+    const newCount = Math.max(0, (commenter.approved_count || 0) - 1);
+    const stillTrusted = newCount >= 5 ? commenter.is_trusted : 0;
+    db.prepare(`
+        UPDATE commenters
+        SET approved_count = ?, is_trusted = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+    `).run(newCount, stillTrusted, commenterId);
+}
+
+router.post('/comments/:id/approve', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (!comment) return res.redirect('/admin/comments');
+
+    // Only increment trust count if not already approved
+    if (comment.status !== 'approved') {
+        db.prepare("UPDATE comments SET status='approved' WHERE id=?").run(comment.id);
+        checkAndGrantTrust(db, comment.commenter_id);
+    }
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+router.post('/comments/:id/reject', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (!comment) return res.redirect('/admin/comments');
+
+    // If was approved, walk back the trust count
+    if (comment.status === 'approved') {
+        decrementTrust(db, comment.commenter_id);
+    }
+    db.prepare("UPDATE comments SET status='rejected' WHERE id=?").run(comment.id);
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+router.post('/comments/:id/flag', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (!comment) return res.redirect('/admin/comments');
+
+    if (comment.status === 'approved') {
+        decrementTrust(db, comment.commenter_id);
+    }
+    db.prepare("UPDATE comments SET status='flagged' WHERE id=?").run(comment.id);
+
+    // Flag the commenter too — revokes trust
+    if (comment.commenter_id) {
+        db.prepare(`
+            UPDATE commenters SET is_flagged=1, is_trusted=0, updated_at=CURRENT_TIMESTAMP
+            WHERE id=?
+        `).run(comment.commenter_id);
+    }
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+router.post('/comments/:id/delete', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const comment = db.prepare('SELECT * FROM comments WHERE id = ?').get(req.params.id);
+    if (comment && comment.status === 'approved') {
+        decrementTrust(db, comment.commenter_id);
+    }
+    db.prepare('DELETE FROM comments WHERE id=?').run(req.params.id);
+    res.redirect(req.headers.referer || '/admin/comments');
+});
+
+// ═══════════════════════════════════════════════════════════════
+// COMMENTERS TRUST MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+
+router.get('/commenters', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const commenters = db.prepare(`
+        SELECT * FROM commenters ORDER BY approved_count DESC, created_at DESC
+    `).all();
+    res.render('admin/commenters', {
+        title: 'Commenters \u2013 Alexandria Admin',
+        commenters
+    });
+});
+
+router.post('/commenters/:id/trust', requireAuth, (req, res) => {
+    req.app.locals.db.prepare(`
+        UPDATE commenters SET is_trusted=1, is_flagged=0, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(req.params.id);
+    res.redirect('/admin/commenters');
+});
+
+router.post('/commenters/:id/untrust', requireAuth, (req, res) => {
+    req.app.locals.db.prepare(`
+        UPDATE commenters SET is_trusted=0, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(req.params.id);
+    res.redirect('/admin/commenters');
+});
+
+router.post('/commenters/:id/flag', requireAuth, (req, res) => {
+    req.app.locals.db.prepare(`
+        UPDATE commenters SET is_flagged=1, is_trusted=0, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(req.params.id);
+    res.redirect('/admin/commenters');
+});
+
+router.post('/commenters/:id/unflag', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const commenter = db.prepare('SELECT * FROM commenters WHERE id=?').get(req.params.id);
+    if (!commenter) return res.redirect('/admin/commenters');
+    // Restore trust if they had enough approvals
+    const trusted = commenter.approved_count >= 5 ? 1 : 0;
+    db.prepare(`
+        UPDATE commenters SET is_flagged=0, is_trusted=?, updated_at=CURRENT_TIMESTAMP WHERE id=?
+    `).run(trusted, req.params.id);
+    res.redirect('/admin/commenters');
+});
+
 module.exports = router;
+
+// ═══════════════════════════════════════════════════════════════
+// SUBMISSIONS (view & manage public article submissions)
+// ═══════════════════════════════════════════════════════════════
+router.get('/submissions', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const status = req.query.status || '';
+
+    let query = `
+        SELECT s.*, sub.name as subject_name
+        FROM submissions s
+        LEFT JOIN subjects sub ON s.subject_id = sub.id
+    `;
+    if (status) query += ` WHERE s.status = '${status}'`;
+    query += ' ORDER BY s.created_at DESC';
+
+    let submissions = [];
+    try {
+        submissions = db.prepare(query).all();
+    } catch (e) { /* table may not exist yet */ }
+
+    res.render('admin/submissions/index', {
+        title: 'Submissions \u2013 Alexandria Admin',
+        submissions,
+        status
+    });
+});
+
+router.get('/submissions/:id', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    let submission = null;
+    try {
+        submission = db.prepare(`
+            SELECT s.*, sub.name as subject_name
+            FROM submissions s
+            LEFT JOIN subjects sub ON s.subject_id = sub.id
+            WHERE s.id = ?
+        `).get(req.params.id);
+    } catch (e) {}
+
+    if (!submission) return res.redirect('/admin/submissions');
+    res.render('admin/submissions/detail', {
+        title: 'Review Submission \u2013 Alexandria Admin',
+        submission
+    });
+});
+
+router.post('/submissions/:id/update', requireAuth, (req, res) => {
+    const db = req.app.locals.db;
+    const { status, admin_notes } = req.body;
+    try {
+        db.prepare(`
+            UPDATE submissions SET status = ?, admin_notes = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `).run(status, admin_notes || null, req.params.id);
+    } catch (e) {}
+    res.redirect(`/admin/submissions/${req.params.id}`);
+});

@@ -1,0 +1,70 @@
+<%- include('../partials/header') %>
+
+<div class="static-page">
+    <h1>Submit an Article</h1>
+
+    <div class="prose" style="margin-bottom:2rem;">
+        <p>We welcome submissions from scholars, practitioners, and thoughtful writers across history, politics, law, economics, and philosophy. Please read our <a href="/about" style="color:var(--accent);">editorial standards</a> before submitting.</p>
+    </div>
+
+    <% if (success) { %>
+        <div style="background:var(--accent-bg);border:1px solid var(--accent);border-radius:4px;padding:1.25rem 1.5rem;margin-bottom:2rem;">
+            <strong style="color:var(--accent);">Submission received.</strong>
+            <p style="margin-top:0.35rem;font-size:0.95rem;color:var(--ink-light);">Thank you for your submission. Our editorial team will be in touch within 4–6 weeks.</p>
+        </div>
+    <% } %>
+
+    <% if (error) { %>
+        <div style="background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.3);border-radius:4px;padding:1.25rem 1.5rem;margin-bottom:2rem;">
+            <strong style="color:#c0392b;">Error:</strong> <%= error %>
+        </div>
+    <% } %>
+
+    <% if (!success) { %>
+    <form class="contact-form" method="POST" action="/submit">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+            <div class="form-group">
+                <label for="name">Full Name <span style="color:var(--accent);">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="Your full name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address <span style="color:var(--accent);">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="your@email.com">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Article Title <span style="color:var(--accent);">*</span></label>
+            <input type="text" id="title" name="title" required placeholder="Proposed title of your article">
+        </div>
+
+        <div class="form-group">
+            <label for="subject_id">Discipline</label>
+            <select id="subject_id" name="subject_id" style="width:100%;padding:0.75rem 1rem;border:1px solid var(--border);border-radius:4px;background:var(--white);color:var(--ink);font-family:'Source Sans 3',sans-serif;font-size:0.95rem;outline:none;">
+                <option value="">— Select a discipline —</option>
+                <% for (const s of subjects) { %>
+                    <option value="<%= s.id %>"><%= s.name %></option>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="abstract">Abstract / Summary <span style="color:var(--accent);">*</span></label>
+            <textarea id="abstract" name="abstract" required placeholder="A concise summary of your article's argument and contribution (150–300 words)" style="min-height:120px;"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="body">Full Article <span style="color:var(--accent);">*</span></label>
+            <textarea id="body" name="body" required placeholder="Paste your full article here. Markdown formatting is supported." style="min-height:280px;"></textarea>
+        </div>
+
+        <div style="font-size:0.82rem;color:var(--ink-faint);margin-top:-0.5rem;">
+            By submitting, you confirm this is your original work and grant Alexandria the right to publish it. You will be credited as author.
+        </div>
+
+        <button type="submit" class="form-submit">Submit Article</button>
+    </form>
+    <% } %>
+</div>
+
+<%- include('../partials/footer') %>

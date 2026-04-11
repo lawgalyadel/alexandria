@@ -155,3 +155,52 @@ CREATE INDEX IF NOT EXISTS idx_articles_view_count ON articles(view_count);
 CREATE INDEX IF NOT EXISTS idx_authors_slug ON authors(slug);
 CREATE INDEX IF NOT EXISTS idx_subjects_slug ON subjects(slug);
 CREATE INDEX IF NOT EXISTS idx_tags_slug ON tags(slug);
+
+-- ═══════════════════════════════════════
+-- SUBMISSIONS (public article submissions)
+-- ═══════════════════════════════════════
+CREATE TABLE IF NOT EXISTS submissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    title TEXT NOT NULL,
+    subject_id INTEGER REFERENCES subjects(id),
+    abstract TEXT NOT NULL,
+    body TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','reviewing','accepted','rejected')),
+    admin_notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ═══════════════════════════════════════
+-- COMMENTERS (trust tracking per email)
+-- ═══════════════════════════════════════
+CREATE TABLE IF NOT EXISTS commenters (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    approved_count INTEGER DEFAULT 0,
+    is_trusted INTEGER DEFAULT 0,
+    is_flagged INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ═══════════════════════════════════════
+-- COMMENTS
+-- ═══════════════════════════════════════
+CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    article_id INTEGER NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
+    commenter_id INTEGER REFERENCES commenters(id),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    body TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected','flagged')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_comments_article ON comments(article_id);
+CREATE INDEX IF NOT EXISTS idx_comments_status ON comments(status);
+CREATE INDEX IF NOT EXISTS idx_commenters_email ON commenters(email);
