@@ -7,7 +7,24 @@ const { marked } = require('marked');
 // ═══════════════════════════════════════
 router.get('/', (req, res) => {
     const db = req.app.locals.db;
-
+    const featured = db.prepare(`
+        SELECT a.*, GROUP_CONCAT(DISTINCT s.name) as subject_names,
+               GROUP_CONCAT(DISTINCT s.slug) as subject_slugs
+        FROM articles a
+        LEFT JOIN article_subjects asub ON a.id = asub.article_id
+        LEFT JOIN subjects s ON asub.subject_id = s.id
+        WHERE a.status = 'published' AND a.is_global_featured = 1
+        GROUP BY a.id
+        ORDER BY a.publish_date DESC LIMIT 1
+    `).get();
+    
+    if (featured) {
+        featured.authors = db.prepare(`
+            SELECT au.* FROM authors au
+            JOIN article_authors aa ON au.id = aa.author_id
+            WHERE aa.article_id = ? ORDER BY aa.sort_order
+        `).all(featured.id);
+    }
     // Latest articles (unified feed)
     const latest = db.prepare(`
         SELECT a.*, GROUP_CONCAT(DISTINCT s.name) as subject_names,
@@ -43,6 +60,7 @@ router.get('/', (req, res) => {
 
     res.render('public/home', {
         title: 'Alexandria — A Journal of Ideas',
+        featured,
         latest,
         subjectCounts: countMap
     });
