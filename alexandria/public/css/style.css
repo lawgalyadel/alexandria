@@ -2476,10 +2476,12 @@
     align-items: flex-start;
 }
 .article-hover-note-logo {
-    height: 24px;
+    height: 20px;
     width: auto;
     display: block;
     border-radius: 3px;
+    object-fit: contain;
+    object-position: left center;
 }
 .article-item--hover:hover .article-hover-note {
     opacity: 1;
@@ -2498,18 +2500,7 @@
     align-items: center;
     justify-content: center;
 }
-.article-overlay-logo {
-    height: 34px;
-    width: auto;
-    opacity: 0;
-    transform: translateY(4px) scale(0.98);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-}
 .article-item--hover:hover .article-item-thumb-overlay { opacity: 1; }
-.article-item--hover:hover .article-overlay-logo {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
 
 /* ── SUBSCRIBE BANNER ── */
 .subscribe-banner--animated {
