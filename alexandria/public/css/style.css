@@ -622,6 +622,26 @@
             color: var(--accent);
         }
 
+        .latest-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .latest-column-title {
+            font-family: 'Newsreader', Georgia, serif;
+            font-size: 1.2rem;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .latest-empty {
+            border-top: 1px solid var(--border);
+            color: var(--ink-light);
+            font-size: 0.95rem;
+            padding: 1.5rem 0;
+        }
+
         .view-all {
             font-size: 0.875rem;
             font-weight: 600;
@@ -985,6 +1005,11 @@
             /* Articles */
             .latest-section {
                 padding: 2.5rem 0 3rem;
+            }
+
+            .latest-columns {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
 
             .article-item {
@@ -2453,6 +2478,36 @@
     transition: transform 0.4s ease;
     border-radius: 4px;
 }
+.article-hover-note {
+    position: absolute;
+    inset: auto 0 0 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.08));
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.7rem 0.6rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+}
+.article-hover-note-logo {
+    width: min(170px, 100%);
+    height: auto;
+    display: block;
+    border-radius: 3px;
+    object-fit: contain;
+    object-position: left center;
+}
+.article-item--hover:hover .article-hover-note {
+    opacity: 1;
+    transform: translateY(0);
+}
 .article-item--hover:hover .article-item-thumb { transform: scale(1.04); }
 
 .article-item-thumb-overlay {
@@ -2462,6 +2517,9 @@
     transition: opacity 0.3s ease;
     pointer-events: none;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .article-item--hover:hover .article-item-thumb-overlay { opacity: 1; }
 
