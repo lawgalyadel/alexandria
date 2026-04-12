@@ -6,6 +6,7 @@ function formatDate(d) {
 }
 const longTermArticles = articles.filter((a) => a.content_type !== 'short_form');
 const shortTermArticles = articles.filter((a) => a.content_type === 'short_form');
+const isPoliticsSubject = subject.slug === 'politics';
 %>
 
     <div class="subject-page-header">
@@ -90,7 +91,8 @@ const shortTermArticles = articles.filter((a) => a.content_type === 'short_form'
                         <h3 class="subject-column-title">Short-form</h3>
                         <div class="article-feed">
                             <% for (const a of shortTermArticles) { %>
-                                <a href="/article/<%= a.slug %>" class="article-item reveal">
+                                <% const showEmbassyNote = isPoliticsSubject && a.content_type === 'short_form'; %>
+                                <a href="/article/<%= a.slug %>" class="article-item reveal <%= showEmbassyNote ? 'article-item--hover' : '' %>">
                                     <div class="article-item-text">
                                         <h3 class="article-item-title"><%= a.title %></h3>
                                         <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
@@ -101,10 +103,22 @@ const shortTermArticles = articles.filter((a) => a.content_type === 'short_form'
                                             <%= formatDate(a.publish_date) %> &middot; Short-form
                                         </div>
                                     </div>
-                                    <% if (a.cover_image_url) { %>
-                                        <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
-                                    <% } else { %>
-                                        <div class="article-item-thumb"></div>
+                                    <div class="article-item-thumb-wrap">
+                                        <% if (a.cover_image_url) { %>
+                                            <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
+                                        <% } else { %>
+                                            <div class="article-item-thumb"></div>
+                                        <% } %>
+                                        <% if (showEmbassyNote) { %>
+                                            <div class="article-hover-note">
+                                                <span>Brought to you by</span>
+                                                <img src="/images/embassy-logo.svg" alt="The Embassy logo" class="article-hover-note-logo">
+                                            </div>
+                                            <div class="article-item-thumb-overlay"></div>
+                                        <% } %>
+                                    </div>
+                                    <% if (showEmbassyNote) { %>
+                                        <div class="article-item-top-bar"></div>
                                     <% } %>
                                 </a>
                             <% } %>
@@ -117,7 +131,8 @@ const shortTermArticles = articles.filter((a) => a.content_type === 'short_form'
             <% } else { %>
                 <div class="article-feed">
                     <% for (const a of articles) { %>
-                        <a href="/article/<%= a.slug %>" class="article-item reveal">
+                        <% const showEmbassyNote = isPoliticsSubject && a.content_type === 'short_form'; %>
+                        <a href="/article/<%= a.slug %>" class="article-item reveal <%= showEmbassyNote ? 'article-item--hover' : '' %>">
                             <div class="article-item-text">
                                 <h3 class="article-item-title"><%= a.title %></h3>
                                 <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
@@ -129,10 +144,22 @@ const shortTermArticles = articles.filter((a) => a.content_type === 'short_form'
                                     <% if (a.content_type === 'short_form') { %> &middot; Short-form<% } %>
                                 </div>
                             </div>
-                            <% if (a.cover_image_url) { %>
-                                <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
-                            <% } else { %>
-                                <div class="article-item-thumb"></div>
+                            <div class="article-item-thumb-wrap">
+                                <% if (a.cover_image_url) { %>
+                                    <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
+                                <% } else { %>
+                                    <div class="article-item-thumb"></div>
+                                <% } %>
+                                <% if (showEmbassyNote) { %>
+                                    <div class="article-hover-note">
+                                        <span>Brought to you by</span>
+                                        <img src="/images/embassy-logo.svg" alt="The Embassy logo" class="article-hover-note-logo">
+                                    </div>
+                                    <div class="article-item-thumb-overlay"></div>
+                                <% } %>
+                            </div>
+                            <% if (showEmbassyNote) { %>
+                                <div class="article-item-top-bar"></div>
                             <% } %>
                         </a>
                     <% } %>
