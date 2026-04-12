@@ -59,7 +59,7 @@ const shortTermArticles = articles.filter((a) => a.content_type === 'short_form'
             <% if (type === 'all') { %>
                 <div class="subject-columns">
                     <div class="subject-column">
-                        <h3 class="subject-column-title">Long-term</h3>
+                        <h3 class="subject-column-title">Long-form</h3>
                         <div class="article-feed">
                             <% for (const a of longTermArticles) { %>
                                 <a href="/article/<%= a.slug %>" class="article-item reveal">
@@ -81,13 +81,13 @@ const shortTermArticles = articles.filter((a) => a.content_type === 'short_form'
                                 </a>
                             <% } %>
                             <% if (!longTermArticles.length) { %>
-                                <p class="subject-empty">No long-term articles in this subject yet.</p>
+                                <p class="subject-empty">No long-form articles in this subject yet.</p>
                             <% } %>
                         </div>
                     </div>
 
                     <div class="subject-column">
-                        <h3 class="subject-column-title">Short-term</h3>
+                        <h3 class="subject-column-title">Short-form</h3>
                         <div class="article-feed">
                             <% for (const a of shortTermArticles) { %>
                                 <a href="/article/<%= a.slug %>" class="article-item reveal">
@@ -109,7 +109,7 @@ const shortTermArticles = articles.filter((a) => a.content_type === 'short_form'
                                 </a>
                             <% } %>
                             <% if (!shortTermArticles.length) { %>
-                                <p class="subject-empty">No short-term articles in this subject yet.</p>
+                                <p class="subject-empty">No short-form articles in this subject yet.</p>
                             <% } %>
                         </div>
                     </div>
