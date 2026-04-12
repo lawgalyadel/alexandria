@@ -38,3 +38,26 @@ function revealOnScroll() {
 }
 window.addEventListener('scroll', revealOnScroll);
 window.addEventListener('load', revealOnScroll);
+
+// Reading progress bar
+const progressBar  = document.getElementById('readingProgressBar');
+const progressPct  = document.getElementById('readingProgressPct');
+const progressWrap = document.getElementById('readingProgressWrap');
+const articleBody  = document.querySelector('.article-body');
+
+if (progressBar && articleBody) {
+    window.addEventListener('scroll', () => {
+        const articleTop    = articleBody.offsetTop;
+        const articleHeight = articleBody.offsetHeight;
+        const scrolled      = window.scrollY - articleTop;
+        const pct           = Math.min(100, Math.max(0, (scrolled / articleHeight) * 100));
+
+        progressBar.style.width = pct + '%';
+        if (progressPct) progressPct.textContent = Math.round(pct) + '%';
+
+        // Show after scrolling past header
+        if (progressWrap) {
+            progressWrap.classList.toggle('visible', window.scrollY > 200);
+        }
+    });
+}

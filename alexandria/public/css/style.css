@@ -2897,3 +2897,57 @@ footer::before {
 [data-theme="dark"] footer::before {
     opacity: 0.4;
 }
+/* ── READING PROGRESS BAR ── */
+.reading-progress-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.reading-progress-wrap.visible {
+    transform: translateY(0);
+}
+.reading-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    width: 0%;
+    transition: width 0.1s linear;
+}
+.reading-progress-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.reading-progress-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+}
+.reading-progress-pct {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+}

@@ -1,4 +1,11 @@
 <%- include('../partials/header') %>
+<div class="reading-progress-wrap" id="readingProgressWrap">
+    <div class="reading-progress-bar" id="readingProgressBar"></div>
+    <div class="reading-progress-info">
+        <span class="reading-progress-title"><%= article.title %></span>
+        <span class="reading-progress-pct" id="readingProgressPct">0%</span>
+    </div>
+</div>
 <%
 function formatDate(d) {
     if (!d) return '';
