@@ -6,10 +6,6 @@ function formatDate(d) {
     return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 %>
-<%
-const longTermLatest = latest.filter((a) => a.content_type === 'long_form');
-const shortTermLatest = latest.filter((a) => a.content_type === 'short_form');
-%>
 
     <!-- ═══════════════ HERO ═══════════════ -->
     <section class="hero hero--animated">
@@ -85,80 +81,42 @@ const shortTermLatest = latest.filter((a) => a.content_type === 'short_form');
             <div class="latest-header">
                 <h2 class="section-heading--bar">Latest</h2>
             </div>
-            <div class="latest-columns">
-                <div class="latest-column">
-                    <h3 class="latest-column-title">Long-term</h3>
-                    <div class="article-feed">
-                        <% for (let i = 0; i < longTermLatest.length; i++) {
-                            const a = longTermLatest[i]; %>
-                            <a href="/article/<%= a.slug %>" class="article-item article-item--hover reveal" style="transition-delay:<%= (i * 0.07).toFixed(2) %>s">
-                                <div class="article-item-text">
-                                    <div class="article-item-subject"><%= a.subject_names %></div>
-                                    <h3 class="article-item-title"><%= a.title %></h3>
-                                    <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
-                                    <div class="article-item-meta">
-                                        <% if (a.authors && a.authors.length) { %>
-                                            <span class="author"><%= a.authors[0].name %></span> &middot;
-                                        <% } %>
-                                        <%= formatDate(a.publish_date) %>
-                                    </div>
+            <div class="article-feed">
+                <% for (let i = 0; i < latest.length; i++) {
+                    const a = latest[i];
+                    const isPoliticsShort = a.content_type === 'short_form' && (a.subject_slugs || '').split(',').includes('politics'); %>
+                    <a href="/article/<%= a.slug %>" class="article-item article-item--hover reveal" style="transition-delay:<%= (i * 0.07).toFixed(2) %>s">
+                        <div class="article-item-text">
+                            <div class="article-item-subject"><%= a.subject_names %></div>
+                            <h3 class="article-item-title"><%= a.title %></h3>
+                            <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
+                            <div class="article-item-meta">
+                                <% if (a.authors && a.authors.length) { %>
+                                    <span class="author"><%= a.authors[0].name %></span> &middot;
+                                <% } %>
+                                <%= formatDate(a.publish_date) %>
+                            </div>
+                        </div>
+                        <div class="article-item-thumb-wrap">
+                            <% if (a.cover_image_url) { %>
+                                <img src="<%= a.cover_image_url %>" alt="<%= a.cover_image_alt || '' %>" class="article-item-thumb">
+                            <% } else { %>
+                                <div class="article-item-thumb"></div>
+                            <% } %>
+                            <% if (isPoliticsShort) { %>
+                                <div class="article-hover-note">
+                                    <span>Brought to you by</span>
+                                    <img src="/images/embassy-logo.svg" alt="The Embassy logo" class="article-hover-note-logo">
                                 </div>
-                                <div class="article-item-thumb-wrap">
-                                    <% if (a.cover_image_url) { %>
-                                        <img src="<%= a.cover_image_url %>" alt="<%= a.cover_image_alt || '' %>" class="article-item-thumb">
-                                    <% } else { %>
-                                        <div class="article-item-thumb"></div>
-                                    <% } %>
-                                    <div class="article-item-thumb-overlay"></div>
-                                </div>
-                                <div class="article-item-top-bar"></div>
-                            </a>
-                        <% } %>
-                        <% if (!longTermLatest.length) { %>
-                            <p class="latest-empty">No long-term articles yet.</p>
-                        <% } %>
-                    </div>
-                </div>
-                <div class="latest-column">
-                    <h3 class="latest-column-title">Short-term</h3>
-                    <div class="article-feed">
-                        <% for (let i = 0; i < shortTermLatest.length; i++) {
-                            const a = shortTermLatest[i];
-                            const isPoliticsShort = (a.subject_slugs || '').split(',').includes('politics'); %>
-                            <a href="/article/<%= a.slug %>" class="article-item article-item--hover reveal" style="transition-delay:<%= (i * 0.07).toFixed(2) %>s">
-                                <div class="article-item-text">
-                                    <div class="article-item-subject"><%= a.subject_names %></div>
-                                    <h3 class="article-item-title"><%= a.title %></h3>
-                                    <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
-                                    <div class="article-item-meta">
-                                        <% if (a.authors && a.authors.length) { %>
-                                            <span class="author"><%= a.authors[0].name %></span> &middot;
-                                        <% } %>
-                                        <%= formatDate(a.publish_date) %>
-                                    </div>
-                                </div>
-                                <div class="article-item-thumb-wrap">
-                                    <% if (a.cover_image_url) { %>
-                                        <img src="<%= a.cover_image_url %>" alt="<%= a.cover_image_alt || '' %>" class="article-item-thumb">
-                                    <% } else { %>
-                                        <div class="article-item-thumb"></div>
-                                    <% } %>
-                                    <% if (isPoliticsShort) { %>
-                                        <div class="article-hover-note">
-                                            <span>Brought to you by</span>
-                                            <img src="/images/embassy-logo.svg" alt="The Embassy logo" class="article-hover-note-logo">
-                                        </div>
-                                    <% } %>
-                                    <div class="article-item-thumb-overlay"></div>
-                                </div>
-                                <div class="article-item-top-bar"></div>
-                            </a>
-                        <% } %>
-                        <% if (!shortTermLatest.length) { %>
-                            <p class="latest-empty">No short-term articles yet.</p>
-                        <% } %>
-                    </div>
-                </div>
+                            <% } %>
+                            <div class="article-item-thumb-overlay"></div>
+                        </div>
+                        <div class="article-item-top-bar"></div>
+                    </a>
+                <% } %>
+                <% if (!latest.length) { %>
+                    <p class="latest-empty">No articles yet.</p>
+                <% } %>
             </div>
         </div>
     </section>
