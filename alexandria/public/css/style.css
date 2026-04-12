@@ -2476,8 +2476,8 @@
     align-items: flex-start;
 }
 .article-hover-note-logo {
-    height: 20px;
-    width: auto;
+    width: min(170px, 100%);
+    height: auto;
     display: block;
     border-radius: 3px;
     object-fit: contain;
