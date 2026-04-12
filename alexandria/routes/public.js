@@ -8,38 +8,17 @@ const { marked } = require('marked');
 router.get('/', (req, res) => {
     const db = req.app.locals.db;
 
-    // Global featured article
-    const featured = db.prepare(`
-        SELECT a.*, GROUP_CONCAT(DISTINCT s.name) as subject_names,
-               GROUP_CONCAT(DISTINCT s.slug) as subject_slugs
-        FROM articles a
-        LEFT JOIN article_subjects asub ON a.id = asub.article_id
-        LEFT JOIN subjects s ON asub.subject_id = s.id
-        WHERE a.status = 'published' AND a.is_global_featured = 1
-        GROUP BY a.id
-        ORDER BY a.publish_date DESC LIMIT 1
-    `).get();
-
-    if (featured) {
-        const featuredAuthors = db.prepare(`
-            SELECT au.* FROM authors au
-            JOIN article_authors aa ON au.id = aa.author_id
-            WHERE aa.article_id = ? ORDER BY aa.sort_order
-        `).all(featured.id);
-        featured.authors = featuredAuthors;
-    }
-
-    // Latest articles (excluding featured)
+    // Latest articles (unified feed)
     const latest = db.prepare(`
         SELECT a.*, GROUP_CONCAT(DISTINCT s.name) as subject_names,
                GROUP_CONCAT(DISTINCT s.slug) as subject_slugs
         FROM articles a
         LEFT JOIN article_subjects asub ON a.id = asub.article_id
         LEFT JOIN subjects s ON asub.subject_id = s.id
-        WHERE a.status = 'published' AND a.id != ?
+        WHERE a.status = 'published'
         GROUP BY a.id
         ORDER BY a.publish_date DESC LIMIT 10
-    `).all(featured ? featured.id : 0);
+    `).all();
 
     // Get authors for each article
     for (const article of latest) {
@@ -64,7 +43,6 @@ router.get('/', (req, res) => {
 
     res.render('public/home', {
         title: 'Alexandria — A Journal of Ideas',
-        featured,
         latest,
         subjectCounts: countMap
     });
