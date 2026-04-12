@@ -2462,14 +2462,24 @@
     inset: auto 0 0 0;
     background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.08));
     color: #fff;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.02em;
-    padding: 0.75rem 0.65rem;
+    padding: 0.7rem 0.6rem;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.25s ease, transform 0.25s ease;
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+}
+.article-hover-note-logo {
+    height: 24px;
+    width: auto;
+    display: block;
+    border-radius: 3px;
 }
 .article-item--hover:hover .article-hover-note {
     opacity: 1;

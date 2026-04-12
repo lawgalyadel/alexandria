@@ -179,7 +179,10 @@ const shortTermLatest = latest.filter((a) => a.content_type === 'short_form');
                                         <div class="article-item-thumb"></div>
                                     <% } %>
                                     <% if (isPoliticsShort) { %>
-                                        <div class="article-hover-note">Brought to you by The Embassy</div>
+                                        <div class="article-hover-note">
+                                            <span>Brought to you by</span>
+                                            <img src="/images/embassy-logo.svg" alt="The Embassy logo" class="article-hover-note-logo">
+                                        </div>
                                     <% } %>
                                     <div class="article-item-thumb-overlay"></div>
                                 </div>
