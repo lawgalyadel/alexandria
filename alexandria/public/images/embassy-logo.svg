@@ -1,6 +1,6 @@
-<svg width="260" height="80" viewBox="0 0 260 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="260" height="80" rx="8" fill="white"/>
-  <g transform="translate(10 10)" stroke="#202020" stroke-width="2.2" fill="none">
+<svg width="300" height="90" viewBox="0 0 300 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="90" rx="8" fill="white"/>
+  <g transform="translate(10 12)" stroke="#202020" stroke-width="2.2" fill="none">
     <path d="M28 4C17 4 8 13 8 24C8 35 17 44 28 44" />
     <path d="M28 4C21 11 17 17 17 24C17 31 21 37 28 44" />
     <path d="M28 4C24 12 22 18 22 24C22 30 24 36 28 44" />
@@ -8,6 +8,6 @@
     <line x1="10" y1="15" x2="30" y2="15" />
     <line x1="10" y1="33" x2="30" y2="33" />
   </g>
-  <text x="54" y="32" fill="#1E1E1E" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-weight="700">THE</text>
-  <text x="54" y="58" fill="#1E1E1E" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700">EMBASSY</text>
+  <text x="58" y="32" fill="#1E1E1E" font-family="Georgia, 'Times New Roman', serif" font-size="19" font-weight="700">THE</text>
+  <text x="58" y="68" fill="#1E1E1E" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-weight="700">EMBASSY</text>
 </svg>
