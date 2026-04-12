@@ -30,6 +30,45 @@ function formatDate(d) {
         </div>
     </section>
 
+    <% if (homepageFeatured) { %>
+    <!-- ═══════════════ HOMEPAGE FEATURED ═══════════════ -->
+    <section class="featured-section featured-section--homepage">
+        <div class="container">
+            <div class="featured-label featured-label--homepage">Featured</div>
+            <div class="featured-article featured-article--homepage reveal">
+                <a href="/article/<%= homepageFeatured.slug %>" class="featured-image featured-image--homepage">
+                    <% if (homepageFeatured.cover_image_url) { %>
+                        <img src="<%= homepageFeatured.cover_image_url %>" alt="<%= homepageFeatured.cover_image_alt || '' %>" style="width:100%;height:100%;object-fit:cover;">
+                    <% } %>
+                    <span class="featured-corner-accent" aria-hidden="true"></span>
+                </a>
+                <div class="featured-content">
+                    <div class="featured-subject"><%= (homepageFeatured.subject_names || 'Alexandria').split(',')[0] %></div>
+                    <h2 class="featured-title"><a href="/article/<%= homepageFeatured.slug %>"><%= homepageFeatured.title %></a></h2>
+                    <p class="featured-excerpt"><%= homepageFeatured.subtitle || '' %></p>
+                    <div class="featured-meta">
+                        <% if (homepageFeatured.authors && homepageFeatured.authors.length) { %>
+                            <span class="author">
+                                <% if (homepageFeatured.authors[0].slug) { %>
+                                    <a href="/author/<%= homepageFeatured.authors[0].slug %>"><%= homepageFeatured.authors[0].name %></a>
+                                <% } else { %>
+                                    <%= homepageFeatured.authors[0].name %>
+                                <% } %>
+                            </span> &middot;
+                        <% } %>
+                        <%= formatDate(homepageFeatured.publish_date) %>
+                    </div>
+                    <a class="read-link read-link--homepage" href="/article/<%= homepageFeatured.slug %>">Continue reading
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14"></path><path d="M13 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
     <!-- ═══════════════ SUBJECTS CAROUSEL ═══════════════ -->
     <section class="subjects-section subjects-section--enhanced">
         <div class="subjects-bg-glow subjects-bg-glow--left"></div>
