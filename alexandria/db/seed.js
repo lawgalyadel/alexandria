@@ -180,30 +180,6 @@ const sampleArticles = [
         tag_slugs: ['legal-reform', 'public-policy', 'democracy'],
         seo_description: 'Short-form briefing on a procedural court ruling and the likely impact on regulatory enforcement.'
     },
-    {
-        title: 'Five Charts That Explain This Month’s Inflation Drift',
-        subtitle: 'A concise macro read on services pressure, wages, and imported disinflation.',
-        slug: 'five-charts-inflation-drift',
-        body: `Headline inflation eased again this month, but the composition matters more than the top-line print.\n\nServices prices remain sticky, especially in shelter-linked categories, while imported goods are still providing a disinflationary counterweight. Wage growth has slowed from last year’s peaks without fully returning to pre-shock trends.\n\nFor policymakers, the message is mixed: progress is real, but broad-based price normalisation is not yet complete.`,
-        content_type: 'short_form',
-        status: 'published',
-        subject_ids: [4],
-        author_ids: [3],
-        tag_slugs: ['macroeconomics', 'public-policy', 'trade'],
-        seo_description: 'Short-form economic snapshot on current inflation dynamics across services, wages, and traded goods.'
-    },
-    {
-        title: 'Archive Note: A New Translation Reopens an Old Constitutional Debate',
-        subtitle: 'How one textual revision changes the balance between precedent and original meaning.',
-        slug: 'new-translation-constitutional-debate',
-        body: `A newly published translation of a foundational constitutional commentary is already changing how scholars frame a long-running interpretive dispute.\n\nThe key shift is subtle: terms previously rendered as institutional “duty” are now translated as conditional “authority,” narrowing the scope of mandatory state action. That distinction could matter in pending cases where courts are weighing historical practice against modern rights doctrines.\n\nIn short, the archive did not settle the debate — it sharpened it.`,
-        content_type: 'short_form',
-        status: 'published',
-        subject_ids: [3, 1],
-        author_ids: [6],
-        tag_slugs: ['constitutional-law', 'historical-method', 'legal-reform'],
-        seo_description: 'Short-form legal-historical note on how a revised translation reframes constitutional interpretation.'
-    },
 ];
 
 const insertArticle = db.prepare(`
