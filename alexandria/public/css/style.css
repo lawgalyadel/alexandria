@@ -1499,6 +1499,26 @@
     cursor: pointer;
 }
 
+.subject-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.subject-column-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.2rem;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+}
+
+.subject-empty {
+    border-top: 1px solid var(--border);
+    color: var(--ink-light);
+    font-size: 0.95rem;
+    padding: 1.5rem 0;
+}
+
 /* ═══════════════════════════════════════
    SEARCH PAGE
 ═══════════════════════════════════════ */
@@ -1815,6 +1835,7 @@
     .article-body { font-size: 1.05rem; }
     .article-page { padding: 2rem 1.5rem 3rem; }
     .subject-page-header h1 { font-size: 1.85rem; }
+    .subject-columns { grid-template-columns: 1fr; gap: 1.5rem; }
     .author-page-header { flex-direction: column; align-items: center; text-align: center; }
     .static-page { padding: 2rem 1.5rem; }
 }
