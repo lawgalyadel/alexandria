@@ -30,41 +30,6 @@ function formatDate(d) {
         </div>
     </section>
 
-    <!-- ═══════════════ FEATURED ═══════════════ -->
-    <% if (featured) { %>
-    <section class="featured-section">
-        <div class="container">
-            <div class="featured-label">
-                <span class="label-bar"></span>Featured
-            </div>
-            <div class="featured-article reveal">
-                <div class="featured-image featured-image--shimmer">
-                    <% if (featured.cover_image_url) { %>
-                        <img src="<%= featured.cover_image_url %>" alt="<%= featured.cover_image_alt || featured.title %>" style="width:100%;height:100%;object-fit:cover;">
-                    <% } %>
-                    <div class="featured-image-overlay"></div>
-                    <div class="featured-corner-accent"></div>
-                    <div class="featured-shimmer"></div>
-                </div>
-                <div class="featured-content">
-                    <div class="featured-subject"><%= featured.subject_names %></div>
-                    <h2 class="featured-title"><a href="/article/<%= featured.slug %>"><%= featured.title %></a></h2>
-                    <p class="featured-excerpt"><%= featured.subtitle || featured.body.substring(0, 200) + '...' %></p>
-                    <div class="featured-meta">
-                        <% if (featured.authors && featured.authors.length) { %>
-                            <span class="author"><a href="/author/<%= featured.authors[0].slug %>"><%= featured.authors[0].name %></a></span> &middot;
-                        <% } %>
-                        <%= formatDate(featured.publish_date) %>
-                    </div>
-                    <a href="/article/<%= featured.slug %>" class="read-link">Continue reading
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <% } %>
-
     <!-- ═══════════════ SUBJECTS CAROUSEL ═══════════════ -->
     <section class="subjects-section subjects-section--enhanced">
         <div class="subjects-bg-glow subjects-bg-glow--left"></div>
