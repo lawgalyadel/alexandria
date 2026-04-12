@@ -2494,8 +2494,22 @@
     transition: opacity 0.3s ease;
     pointer-events: none;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.article-overlay-logo {
+    height: 34px;
+    width: auto;
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+    transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .article-item--hover:hover .article-item-thumb-overlay { opacity: 1; }
+.article-item--hover:hover .article-overlay-logo {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
 
 /* ── SUBSCRIBE BANNER ── */
 .subscribe-banner--animated {
