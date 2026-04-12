@@ -156,6 +156,30 @@ const sampleArticles = [
         tag_slugs: ['ancient-history', 'democracy', 'classical-thought'],
         seo_description: 'Exploring democratic governance systems that predated Athens, from Mesopotamian assemblies to Indian sanghas.'
     },
+    {
+        title: 'Three Signals from This Week’s Parliamentary Coalition Talks',
+        subtitle: 'A rapid read on fiscal discipline, cabinet architecture, and foreign-policy coordination.',
+        slug: 'signals-from-parliamentary-coalition-talks',
+        body: `Coalition negotiators left this week’s talks with fewer public statements but clearer priorities.\n\nFirst, all blocs now acknowledge that debt-service costs will constrain discretionary spending next quarter. Second, committee leadership is being treated as a bargaining chip for policy concessions rather than ceremonial balance. Third, foreign-policy language has narrowed around alliance continuity, reducing uncertainty for markets.\n\nTaken together, these signals suggest a narrower but more predictable governing agenda over the next six months.`,
+        content_type: 'short_form',
+        status: 'published',
+        subject_ids: [2],
+        author_ids: [5],
+        tag_slugs: ['public-policy', 'geopolitics'],
+        seo_description: 'Short-form analysis of coalition negotiations and their implications for fiscal policy and governance.'
+    },
+    {
+        title: 'Court Watch: A Narrow Ruling with Wide Regulatory Consequences',
+        subtitle: 'Why one procedural decision may reshape enforcement strategy this year.',
+        slug: 'court-watch-narrow-ruling-wide-consequences',
+        body: `A procedural ruling issued this morning looks narrow on paper, but agencies are already adjusting how they sequence enforcement actions.\n\nBy emphasizing evidentiary timing over substantive doctrine, the court has effectively raised the cost of early-stage intervention for regulators. Policy teams should expect more targeted actions, fewer broad test cases, and heavier reliance on negotiated compliance frameworks.\n\nFor practitioners, the practical takeaway is immediate: legal strategy will increasingly begin with process design, not just doctrinal argument.`,
+        content_type: 'short_form',
+        status: 'published',
+        subject_ids: [3, 2],
+        author_ids: [4],
+        tag_slugs: ['legal-reform', 'public-policy', 'democracy'],
+        seo_description: 'Short-form briefing on a procedural court ruling and the likely impact on regulatory enforcement.'
+    },
 ];
 
 const insertArticle = db.prepare(`

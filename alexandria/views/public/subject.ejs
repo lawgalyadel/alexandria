@@ -4,6 +4,8 @@ function formatDate(d) {
     if (!d) return '';
     return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
+const longTermArticles = articles.filter((a) => a.content_type !== 'short_form');
+const shortTermArticles = articles.filter((a) => a.content_type === 'short_form');
 %>
 
     <div class="subject-page-header">
@@ -54,28 +56,88 @@ function formatDate(d) {
         <% } %>
 
         <section class="latest-section">
-            <div class="article-feed">
-                <% for (const a of articles) { %>
-                    <a href="/article/<%= a.slug %>" class="article-item reveal">
-                        <div class="article-item-text">
-                            <h3 class="article-item-title"><%= a.title %></h3>
-                            <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
-                            <div class="article-item-meta">
-                                <% if (a.authors && a.authors.length) { %>
-                                    <span class="author"><%= a.authors[0].name %></span> &middot;
-                                <% } %>
-                                <%= formatDate(a.publish_date) %>
-                                <% if (a.content_type === 'short_form') { %> &middot; Short-form<% } %>
-                            </div>
+            <% if (type === 'all') { %>
+                <div class="subject-columns">
+                    <div class="subject-column">
+                        <h3 class="subject-column-title">Long-form</h3>
+                        <div class="article-feed">
+                            <% for (const a of longTermArticles) { %>
+                                <a href="/article/<%= a.slug %>" class="article-item reveal">
+                                    <div class="article-item-text">
+                                        <h3 class="article-item-title"><%= a.title %></h3>
+                                        <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
+                                        <div class="article-item-meta">
+                                            <% if (a.authors && a.authors.length) { %>
+                                                <span class="author"><%= a.authors[0].name %></span> &middot;
+                                            <% } %>
+                                            <%= formatDate(a.publish_date) %>
+                                        </div>
+                                    </div>
+                                    <% if (a.cover_image_url) { %>
+                                        <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
+                                    <% } else { %>
+                                        <div class="article-item-thumb"></div>
+                                    <% } %>
+                                </a>
+                            <% } %>
+                            <% if (!longTermArticles.length) { %>
+                                <p class="subject-empty">No long-form articles in this subject yet.</p>
+                            <% } %>
                         </div>
-                        <% if (a.cover_image_url) { %>
-                            <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
-                        <% } else { %>
-                            <div class="article-item-thumb"></div>
-                        <% } %>
-                    </a>
-                <% } %>
-            </div>
+                    </div>
+
+                    <div class="subject-column">
+                        <h3 class="subject-column-title">Short-form</h3>
+                        <div class="article-feed">
+                            <% for (const a of shortTermArticles) { %>
+                                <a href="/article/<%= a.slug %>" class="article-item reveal">
+                                    <div class="article-item-text">
+                                        <h3 class="article-item-title"><%= a.title %></h3>
+                                        <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
+                                        <div class="article-item-meta">
+                                            <% if (a.authors && a.authors.length) { %>
+                                                <span class="author"><%= a.authors[0].name %></span> &middot;
+                                            <% } %>
+                                            <%= formatDate(a.publish_date) %> &middot; Short-form
+                                        </div>
+                                    </div>
+                                    <% if (a.cover_image_url) { %>
+                                        <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
+                                    <% } else { %>
+                                        <div class="article-item-thumb"></div>
+                                    <% } %>
+                                </a>
+                            <% } %>
+                            <% if (!shortTermArticles.length) { %>
+                                <p class="subject-empty">No short-form articles in this subject yet.</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="article-feed">
+                    <% for (const a of articles) { %>
+                        <a href="/article/<%= a.slug %>" class="article-item reveal">
+                            <div class="article-item-text">
+                                <h3 class="article-item-title"><%= a.title %></h3>
+                                <p class="article-item-excerpt"><%= a.subtitle || '' %></p>
+                                <div class="article-item-meta">
+                                    <% if (a.authors && a.authors.length) { %>
+                                        <span class="author"><%= a.authors[0].name %></span> &middot;
+                                    <% } %>
+                                    <%= formatDate(a.publish_date) %>
+                                    <% if (a.content_type === 'short_form') { %> &middot; Short-form<% } %>
+                                </div>
+                            </div>
+                            <% if (a.cover_image_url) { %>
+                                <img src="<%= a.cover_image_url %>" alt="" class="article-item-thumb">
+                            <% } else { %>
+                                <div class="article-item-thumb"></div>
+                            <% } %>
+                        </a>
+                    <% } %>
+                </div>
+            <% } %>
 
             <% if (totalPages > 1) { %>
                 <div class="pagination">
