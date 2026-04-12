@@ -30,6 +30,33 @@ function formatDate(d) {
         </div>
     </section>
 
+    <% if (homepageFeatured) { %>
+    <!-- ═══════════════ HOMEPAGE FEATURED ═══════════════ -->
+    <section class="featured-section featured-section--homepage">
+        <div class="container">
+            <div class="featured-label">Featured Article</div>
+            <div class="featured-article featured-article--homepage reveal">
+                <div class="featured-image">
+                    <% if (homepageFeatured.cover_image_url) { %>
+                        <img src="<%= homepageFeatured.cover_image_url %>" alt="<%= homepageFeatured.cover_image_alt || '' %>" style="width:100%;height:100%;object-fit:cover;">
+                    <% } %>
+                </div>
+                <div class="featured-content">
+                    <div class="featured-subject"><%= homepageFeatured.subject_names || 'Alexandria' %></div>
+                    <h2 class="featured-title"><a href="/article/<%= homepageFeatured.slug %>"><%= homepageFeatured.title %></a></h2>
+                    <p class="featured-excerpt"><%= homepageFeatured.subtitle || '' %></p>
+                    <div class="featured-meta">
+                        <% if (homepageFeatured.authors && homepageFeatured.authors.length) { %>
+                            <span class="author"><%= homepageFeatured.authors[0].name %></span> &middot;
+                        <% } %>
+                        <%= formatDate(homepageFeatured.publish_date) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
     <!-- ═══════════════ SUBJECTS CAROUSEL ═══════════════ -->
     <section class="subjects-section subjects-section--enhanced">
         <div class="subjects-bg-glow subjects-bg-glow--left"></div>
