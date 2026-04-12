@@ -57,7 +57,7 @@ if (progressBar && articleBody) {
 
         // Show after scrolling past header
         if (progressWrap) {
-            progressWrap.classList.toggle('visible', window.scrollY > 200);
+            progressWrap.classList.toggle('visible', window.scrollY > 60);
         }
     });
 }
