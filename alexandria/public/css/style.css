@@ -150,6 +150,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            overflow: visible;
         }
 
         .header-inner {
@@ -2918,13 +2919,11 @@ footer::before {
     transform: translateY(0);
 }
 .reading-progress-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--green));
-    width: 0%;
-    transition: width 0.1s linear;
+    position: absolute; bottom: -2px; left: 0;
+    height: 3px; width: 0%;
+    background: linear-gradient(90deg, #e8c84a, var(--accent), var(--accent-dark));
+    z-index: 1001; transition: width 0.12s linear;
+    pointer-events: none; border-radius: 0 2px 2px 0;
 }
 .reading-progress-info {
     display: flex;
